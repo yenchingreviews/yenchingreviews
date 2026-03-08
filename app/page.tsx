@@ -2,6 +2,8 @@ import { CourseFilters } from '@/app/components/course-filters';
 import { CourseList } from '@/app/components/course-list';
 import { getCourseFilterOptions, getCourses } from '@/lib/courses';
 
+export const dynamic = 'force-dynamic';
+
 type HomePageProps = {
   searchParams: {
     search?: string;
