@@ -2,11 +2,12 @@ import type { Course } from '@/types/course';
 
 type CourseListProps = {
   courses: Course[];
+  emptyMessage?: string | null;
 };
 
-export function CourseList({ courses }: CourseListProps) {
+export function CourseList({ courses, emptyMessage }: CourseListProps) {
   if (courses.length === 0) {
-    return <p className="panel">No courses match the current filters.</p>;
+    return <p className="panel">{emptyMessage ?? 'No courses match the current filters.'}</p>;
   }
 
   return (

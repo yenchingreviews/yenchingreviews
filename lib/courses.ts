@@ -9,6 +9,67 @@ type CourseFilters = {
   language?: string;
 };
 
+type RawCourseRow = Record<string, unknown>;
+
+function normalizeCourse(row: RawCourseRow): Course | null {
+  const courseName = row.course_name ?? row.name;
+  const courseId = row.course_id ?? row.id ?? courseName;
+
+  if (typeof courseName !== 'string' || courseName.trim().length === 0) {
+    return null;
+  }
+
+  return {
+    course_id: String(courseId ?? courseName),
+    course_name: courseName,
+    category_type:
+      typeof row.category_type === 'string'
+        ? row.category_type
+        : typeof row.category === 'string'
+          ? row.category
+          : null,
+    track_name:
+      typeof row.track_name === 'string'
+        ? row.track_name
+        : typeof row.track === 'string'
+          ? row.track
+          : null,
+    language: typeof row.language === 'string' ? row.language : null,
+    aliases: typeof row.aliases === 'string' ? row.aliases : null,
+    notes: typeof row.notes === 'string' ? row.notes : null,
+  };
+}
+
+function matchesFilters(course: Course, filters: CourseFilters) {
+  const search = filters.search?.trim().toLowerCase();
+  const categoryType = filters.categoryType?.trim();
+  const trackName = filters.trackName?.trim();
+  const language = filters.language?.trim();
+
+  if (search) {
+    const name = course.course_name.toLowerCase();
+    const aliases = course.aliases?.toLowerCase() ?? '';
+
+    if (!name.includes(search) && !aliases.includes(search)) {
+      return false;
+    }
+  }
+
+  if (categoryType && course.category_type !== categoryType) {
+    return false;
+  }
+
+  if (trackName && course.track_name !== trackName) {
+    return false;
+  }
+
+  if (language && course.language !== language) {
+    return false;
+  }
+
+  return true;
+}
+
 export async function getCourses(filters: CourseFilters) {
   const supabase = createSupabaseServerClient();
 
@@ -16,42 +77,48 @@ export async function getCourses(filters: CourseFilters) {
     return {
       courses: [] as Course[],
       error: getSupabaseSetupMessage(),
+      emptyReason: null as string | null,
     };
   }
 
-  let query = supabase
-    .from('courses')
-    .select('*')
-    .order('course_name', { ascending: true });
-
-  if (filters.search?.trim()) {
-    query = query.ilike('course_name', `%${filters.search.trim()}%`);
-  }
-
-  if (filters.categoryType?.trim()) {
-    query = query.eq('category_type', filters.categoryType.trim());
-  }
-
-  if (filters.trackName?.trim()) {
-    query = query.eq('track_name', filters.trackName.trim());
-  }
-
-  if (filters.language?.trim()) {
-    query = query.eq('language', filters.language.trim());
-  }
-
-  const { data, error } = await query;
+  const { data, error } = await supabase.from('courses').select('*');
 
   if (error) {
     return {
       courses: [] as Course[],
       error: `Could not load courses: ${error.message}`,
+      emptyReason: null as string | null,
+    };
+  }
+
+  const normalizedCourses = (data ?? [])
+    .map((row) => normalizeCourse(row as RawCourseRow))
+    .filter((course): course is Course => Boolean(course))
+    .sort((a, b) => a.course_name.localeCompare(b.course_name));
+
+  const filteredCourses = normalizedCourses.filter((course) => matchesFilters(course, filters));
+
+  if (filteredCourses.length === 0) {
+    const hasActiveFilters = Boolean(
+      filters.search?.trim() ||
+        filters.categoryType?.trim() ||
+        filters.trackName?.trim() ||
+        filters.language?.trim(),
+    );
+
+    return {
+      courses: [] as Course[],
+      error: null,
+      emptyReason: hasActiveFilters
+        ? 'No courses matched the active filters.'
+        : 'Received zero rows from Supabase. If courses exist, check RLS SELECT policies for anon access on the courses table.',
     };
   }
 
   return {
-    courses: (data ?? []) as Course[],
+    courses: filteredCourses,
     error: null,
+    emptyReason: null as string | null,
   };
 }
 
@@ -66,19 +133,20 @@ export async function getCourseFilterOptions() {
     };
   }
 
-  const { data } = await supabase
-    .from('courses')
-    .select('category_type, track_name, language')
-    .limit(5000);
+  const { data } = await supabase.from('courses').select('*').limit(5000);
 
   const categories = new Set<string>();
   const tracks = new Set<string>();
   const languages = new Set<string>();
 
-  (data ?? []).forEach((row) => {
-    if (row.category_type) categories.add(row.category_type);
-    if (row.track_name) tracks.add(row.track_name);
-    if (row.language) languages.add(row.language);
+  (data ?? []).forEach((rawRow) => {
+    const row = rawRow as RawCourseRow;
+    const category = row.category_type ?? row.category;
+    const track = row.track_name ?? row.track;
+
+    if (typeof category === 'string') categories.add(category);
+    if (typeof track === 'string') tracks.add(track);
+    if (typeof row.language === 'string') languages.add(row.language);
   });
 
   return {

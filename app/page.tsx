@@ -37,7 +37,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {results.error && <p className="notice">{results.error}</p>}
 
       <CourseFilters selected={selected} options={filters} />
-      <CourseList courses={results.courses} />
+      <CourseList courses={results.courses} emptyMessage={results.emptyReason} />
     </main>
   );
 }
