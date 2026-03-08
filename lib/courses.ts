@@ -1,6 +1,7 @@
 import { getSupabaseSetupMessage } from '@/lib/supabase/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Course } from '@/types/course';
+import type { Review } from '@/types/review';
 
 type CourseFilters = {
   search?: string;
@@ -85,5 +86,62 @@ export async function getCourseFilterOptions() {
     categories: Array.from(categories).sort(),
     tracks: Array.from(tracks).sort(),
     languages: Array.from(languages).sort(),
+  };
+}
+
+export async function getCourseById(courseId: string) {
+  const supabase = createSupabaseServerClient();
+
+  if (!supabase) {
+    return {
+      course: null as Course | null,
+      error: getSupabaseSetupMessage(),
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('course_id', courseId)
+    .maybeSingle();
+
+  if (error) {
+    return {
+      course: null as Course | null,
+      error: `Could not load course: ${error.message}`,
+    };
+  }
+
+  return {
+    course: (data as Course | null) ?? null,
+    error: null,
+  };
+}
+
+export async function getCourseReviews(courseId: string) {
+  const supabase = createSupabaseServerClient();
+
+  if (!supabase) {
+    return {
+      reviews: [] as Review[],
+      error: getSupabaseSetupMessage(),
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*')
+    .eq('course_id', courseId);
+
+  if (error) {
+    return {
+      reviews: [] as Review[],
+      error: `Could not load reviews: ${error.message}`,
+    };
+  }
+
+  return {
+    reviews: (data ?? []) as Review[],
+    error: null,
   };
 }
