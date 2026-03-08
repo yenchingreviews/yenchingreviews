@@ -21,13 +21,11 @@ export async function getCourses(filters: CourseFilters) {
 
   let query = supabase
     .from('courses')
-    .select('course_id, course_name, category_type, track_name, language, aliases, notes')
+    .select('*')
     .order('course_name', { ascending: true });
 
   if (filters.search?.trim()) {
-    query = query.or(
-      `course_name.ilike.%${filters.search.trim()}%,aliases.ilike.%${filters.search.trim()}%`,
-    );
+    query = query.ilike('course_name', `%${filters.search.trim()}%`);
   }
 
   if (filters.categoryType?.trim()) {
