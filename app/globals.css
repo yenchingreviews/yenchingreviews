@@ -1,10 +1,9 @@
 :root {
-  --cream: #f8f4ea;
-  --card: #fffdf6;
-  --ink: #221f1a;
-  --muted: #6a6258;
-  --line: #dccfbd;
-  --brand-red: #b32026;
+  --cream: #f7f2e8;
+  --ink: #28211d;
+  --muted: #71665a;
+  --line: #d8cab7;
+  --brand-red: #b4232a;
 }
 
 * {
@@ -15,180 +14,324 @@ body {
   margin: 0;
   background: var(--cream);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Avenir Next', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-weight: 450;
+  letter-spacing: 0.005em;
 }
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
-.page {
-  max-width: 1080px;
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 242, 232, 0.96);
+  backdrop-filter: blur(5px);
+}
+
+.topbar-inner {
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.brand {
-  margin: 0;
+.logo {
   color: var(--brand-red);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  letter-spacing: 0.01em;
-  text-transform: lowercase;
+  font-size: 1.55rem;
+  font-weight: 700;
 }
 
-.subtitle {
-  margin: 0.25rem 0 1rem;
+.nav-link {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-weight: 550;
+  padding: 0.3rem 0.15rem;
+  border-bottom: 1px solid transparent;
 }
 
-.panel {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.9rem;
+.nav-link.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--brand-red);
 }
 
-.filters {
+.catalog-page {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0.9rem 0.6rem;
+}
+
+.catalog-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: minmax(250px, 1fr) minmax(330px, 1.2fr) minmax(420px, 2fr);
+  gap: 0;
+  align-items: start;
+}
+
+.left-column,
+.middle-column,
+.right-column {
+  min-height: calc(100vh - 90px);
+  padding: 0.75rem 0.9rem;
+}
+
+.middle-column,
+.right-column {
+  border-left: 1px solid var(--line);
+}
+
+.panel,
+.course-catalog,
+.filter-panel,
+.detail-panel {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.panel-title {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.filter-panel {
+  position: sticky;
+  top: 4.2rem;
+}
+
+.filter-group {
   margin-bottom: 1rem;
 }
 
-.filters label {
-  font-size: 0.78rem;
-  font-weight: 600;
+.filter-group h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.83rem;
   color: var(--muted);
-  display: grid;
-  gap: 0.35rem;
 }
 
-.filters input,
-.filters select,
-.filters button {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  min-height: 2.2rem;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.9rem;
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
-.filters button {
-  background: var(--brand-red);
-  color: white;
-  font-weight: 600;
+.filter-tag {
   cursor: pointer;
-  align-self: end;
+  transition: transform 110ms ease, box-shadow 110ms ease;
 }
 
-.course-list {
+.filter-tag.active {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(28, 22, 17, 0.22);
+}
+
+.filter-status {
+  margin: 0.6rem 0 0;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.catalog-head {
+  margin-bottom: 0.75rem;
+}
+
+.catalog-search {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: #f9f4ec;
+  font-size: 0.93rem;
+}
+
+.catalog-head p {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.course-list,
+.review-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.6rem;
+  gap: 0.58rem;
 }
 
-.course-item {
+.course-item,
+.review-card {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 0;
-  background: #fff;
+  border-radius: 11px;
+  background: rgba(255, 252, 246, 0.45);
 }
 
-.course-link {
+.course-item.selected {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 1px #e6b1b5;
+}
+
+.course-link,
+.review-card {
   display: block;
-  padding: 0.75rem;
-  text-decoration: none;
+  padding: 0.7rem;
 }
 
-.course-link:hover,
-.course-link:focus-visible {
-  background: #fff7ec;
+.course-name,
+.detail-name {
+  margin: 0 0 0.45rem;
+  font-weight: 620;
 }
 
-.course-name {
-  margin: 0 0 0.35rem;
-  font-size: 1rem;
+.detail-name {
+  font-size: clamp(1.2rem, 1.9vw, 1.62rem);
+  margin-bottom: 0;
 }
 
-.meta {
+.meta,
+.review-meta,
+.filter-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.36rem;
+}
+
+.tag {
+  font-size: 0.72rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.13rem 0.5rem;
+  color: var(--muted);
+  background: #f7efe2;
+}
+
+.tag.category.is-yenching {
+  background: #b4232a;
+  border-color: #b4232a;
+  color: #fff;
+}
+
+.tag.category.is-pku {
+  background: #232323;
+  border-color: #232323;
+  color: #fff;
+}
+
+.tag.language {
+  background: #efe8db;
+}
+
+.track-amber { background: #f7e7bd; border-color: #edd7a3; color: #5b3c11; }
+.track-blue { background: #dfe9ff; border-color: #c5d7ff; color: #1f3b73; }
+.track-rose { background: #ffe2e4; border-color: #f6c7cb; color: #7b2231; }
+.track-violet { background: #ece2ff; border-color: #dac8fd; color: #4d2b75; }
+.track-teal { background: #dff5f1; border-color: #bfe7df; color: #145047; }
+.track-olive { background: #edf2d8; border-color: #dde7c0; color: #4b5b1f; }
+.track-orange { background: #ffe8d6; border-color: #f9d6b6; color: #79411f; }
+.track-default { background: #f5f0e8; }
+
+.detail-meta {
+  margin: 0.58rem 0 0.3rem;
+}
+
+.course-notes {
+  margin-top: 0.85rem;
+  padding: 0.55rem 0.65rem;
+  border-left: 2px solid #d1b79b;
+  color: #5d4f42;
+}
+
+.reviews-heading {
+  margin: 1.1rem 0 0.7rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.reviews-heading h3 {
+  margin: 0;
+}
+
+.review-card p {
+  margin: 0.52rem 0;
+  line-height: 1.44;
+}
+
+.review-topline {
+  display: flex;
+  justify-content: space-between;
   gap: 0.4rem;
   flex-wrap: wrap;
 }
 
-.tag {
-  font-size: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.14rem 0.5rem;
+.review-term {
+  font-weight: 650;
+  color: #6f1620;
+}
+
+.review-prof {
   color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.review-meta span {
+  font-size: 0.73rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid #dfd3c3;
+  border-radius: 999px;
+  color: #62574c;
+  background: #f5ede2;
 }
 
 .notice {
-  border-radius: 8px;
   border: 1px solid #d7a9ac;
   background: #fff5f5;
   color: #6f1d1f;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
-.back-link {
-  color: var(--muted);
-  text-decoration: none;
-}
-
-.back-link:hover,
-.back-link:focus-visible {
-  text-decoration: underline;
-}
-
-.course-header {
-  margin-bottom: 1rem;
-}
-
-.course-detail-title {
-  margin-bottom: 0.5rem;
-}
-
-.section-title {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
-}
-
-.review-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.review-item {
-  border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 0.75rem;
-  background: #fff;
+  padding: 0.7rem;
+  margin: 0 0.8rem 0.8rem;
+  font-size: 0.88rem;
 }
 
-.review-body {
-  margin: 0.55rem 0 0;
-  line-height: 1.5;
-}
+@media (max-width: 1100px) {
+  .catalog-grid {
+    grid-template-columns: 300px 1fr;
+  }
 
-@media (max-width: 800px) {
-  .filters {
-    grid-template-columns: 1fr 1fr;
+  .right-column {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    grid-column: 1 / -1;
+  }
+
+  .filter-panel {
+    position: static;
   }
 }
 
-@media (max-width: 520px) {
-  .filters {
+@media (max-width: 760px) {
+  .catalog-grid {
     grid-template-columns: 1fr;
+  }
+
+  .middle-column,
+  .right-column {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .left-column,
+  .middle-column,
+  .right-column {
+    min-height: auto;
   }
 }
