@@ -1,139 +1,104 @@
 # AGENTS.md
 
-## Project overview
+## Project purpose
 
 This repository powers **yenchingreviews**, a course review platform for the Yenching Academy at Peking University.
 
-The goal is to build a Berkeleytime-style course review site where students can:
-- browse courses
-- filter courses quickly
-- open a course page
-- read course reviews
-- eventually submit new reviews
+The goal is to create a useful, trustworthy, student-oriented academic utility where users can browse courses, understand how past students experienced them, and eventually contribute new reviews.
 
-The product should feel:
-- sleek
-- minimal
-- information-dense
+This is not a marketing site. It is a practical information tool.
+
+## Product direction
+
+The product should prioritize:
+
+- clarity
+- speed
+- usability
+- credibility
+- compact presentation of useful information
+- easy browsing on both desktop and mobile
+
+The site should help users quickly answer questions like:
+
+- What courses exist?
+- Which courses fit a given interest or category?
+- What did students think of a course?
+- How did experiences vary by professor or term?
+
+## Design philosophy
+
+The interface should feel academically useful, lightweight, and easy to scan.
+
+General design goals:
+- clean and restrained
+- information-dense without feeling cluttered
+- visually calm
 - mobile-friendly
 - fast to navigate
 
-Branding:
-- always style the product name as **yenchingreviews** in lowercase
-- use a cream or off-white background
-- use red as the primary accent color
-- keep the UI restrained and academic, not playful or overdesigned
+Branding notes:
+- style the product name as **yenchingreviews** in lowercase
+- the visual identity should feel simple, modern, and credible
+- avoid overly playful or overly decorative design choices
 
-## Tech stack
+Do not lock the UI to one exact visual style if better implementations emerge over time. Preserve the product’s overall character rather than treating any single layout detail as sacred.
 
-- Next.js frontend
-- Supabase database
-- GitHub repository
-- Vercel hosting
+## Technical direction
 
-Assume the Supabase project already exists and contains the real data.
-
-## Existing Supabase schema
-
-### courses table
-- course_id
-- course_name
-- category_type
-- track_name
-- language
-- aliases
-- notes
-
-### reviews table
-- review_id
-- course_id
-- term_label
-- professor_name
-- review_text
-- legacy_review_order
-- reviewer_display_name
-- is_anonymous
-- rating_quality
-- rating_workload
-- used_for_track_credit
-- used_for_track
-
-## Business logic rules
-
-1. `category_type` can only be `Yenching` or `PKU Wide`.
-2. `track_name` applies to Yenching courses, including `General Elective`.
-3. PKU-wide courses may optionally have track credit based on user reviews.
-4. A single course page may contain reviews for multiple professors.
-5. Course pages must support filtering reviews by professor.
-6. Ratings may be missing, so aggregation must handle null values gracefully.
-7. Future review submission must support both:
-   - adding a review to an existing course
-   - adding a brand-new course and its first review
-
-## Core product requirements
-
-### Homepage
-The homepage should support:
-- browsing courses
-- search
-- filtering by category_type
-- filtering by track_name
-- filtering by language
-- mobile responsiveness
-
-### Course page
-Each course page should display:
-- course title
-- tags for category_type, track_name, language
-- average quality and workload ratings if available
-- review cards with professor, term, and review text
-- attribution as either:
-  - Anonymous
-  - Reviewed by [name]
-- professor filter buttons such as:
-  - All
-  - Prof A
-  - Prof B
-
-## Architecture preferences
+This project uses:
+- Next.js
+- Supabase
+- GitHub
+- Vercel
 
 Prefer:
-- Next.js App Router
-- server components by default
-- client components only when needed for interactivity
-- centralized Supabase helpers
-- modular components
-- incremental PRs
-- clear loading and empty states
+- modular code
+- small, reviewable pull requests
+- centralized data access patterns
+- maintainable component structure
+- clear loading, empty, and error states
+- simple solutions over clever ones
 
 Avoid:
-- placeholder/demo data
+- placeholder/demo assumptions lingering in production code
 - unnecessary complexity
-- scattered Supabase queries across many files
-- generic startup landing-page styling
+- scattered data-fetching logic
+- fragile hard-coded assumptions when a more robust pattern is available
 
-## UI guidance
-
-The UI should be:
-- Berkeleytime-inspired in density and utility
-- modern and clean
-- compact but readable
-- cream background
-- red branding for yenchingreviews
-- subtle borders
-- minimal shadows
-- strong typography hierarchy
-
-Do not make it look:
-- overly playful
-- too spacious
-- like a marketing page
-
-## Working style
+## Working principles for agents
 
 When making changes:
-1. keep changes focused and reviewable
-2. explain what was changed
-3. note assumptions made
-4. identify any follow-up work
-5. preserve alignment with the Supabase schema above
+1. Keep changes focused on the requested task.
+2. Preserve existing functionality unless the task requires changing it.
+3. Explain assumptions clearly.
+4. Do not invent product requirements that are not stated in the repo or prompt.
+5. Prefer implementation choices that are easy to review and easy to revise later.
+
+## Database guidance
+
+This project uses Supabase as the source of application data.
+
+Guidelines:
+- Do not assume database fields beyond what is necessary for the feature being implemented.
+- Do not introduce references to unused columns.
+- If a query depends on a field, that dependency should be deliberate and tied to a visible product need.
+- If schema uncertainty exists, surface the assumption clearly in code or in the PR summary rather than guessing broadly.
+
+## Current product priorities
+
+The current focus is the read experience:
+- course browsing
+- filtering
+- course detail pages
+- review display
+
+Submission flows, moderation tools, and more advanced aggregation can be added later.
+
+## Output expectations
+
+For each task:
+- keep changes PR-friendly
+- summarize what changed
+- note any assumptions
+- identify any obvious follow-up work
