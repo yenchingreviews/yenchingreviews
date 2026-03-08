@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
+import Link from 'next/link';
 import type { Course } from '@/types/course';
 
 type CourseListProps = {
