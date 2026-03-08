@@ -1,3 +1,4 @@
+import { getSupabaseSetupMessage } from '@/lib/supabase/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Course } from '@/types/course';
 
@@ -14,8 +15,7 @@ export async function getCourses(filters: CourseFilters) {
   if (!supabase) {
     return {
       courses: [] as Course[],
-      error:
-        'Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to continue.',
+      error: getSupabaseSetupMessage(),
     };
   }
 
