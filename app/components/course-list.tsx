@@ -17,12 +17,24 @@ type CourseListProps = {
 };
 
 function trackToken(trackName: string | null) {
-  if (!trackName) return 'track-default';
-
-  const palette = ['track-amber', 'track-blue', 'track-rose', 'track-violet', 'track-teal', 'track-olive', 'track-orange'];
-
-  const hash = Array.from(trackName).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return palette[hash % palette.length];
+  switch (trackName) {
+    case 'Economics and Management':
+      return 'track-econ';
+    case 'General Elective':
+      return 'track-general';
+    case 'History and Archaeology':
+      return 'track-history';
+    case 'Law and Society':
+      return 'track-law';
+    case 'Literature and Culture':
+      return 'track-literature';
+    case 'Philosophy and Religion':
+      return 'track-philosophy';
+    case 'Politics and International Relations':
+      return 'track-politics';
+    default:
+      return 'track-default';
+  }
 }
 
 export function CourseList({ courses, selectedCourseId, activeQuery }: CourseListProps) {
@@ -90,14 +102,17 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
               <li key={course.course_id} className={`course-item ${isActive ? 'selected' : ''}`}>
                 <Link href={`/?${params.toString()}`} scroll={false} className="course-link">
                   <h3 className="course-name">{course.course_name}</h3>
-                  <div className="meta">
-                    {course.category_type && (
-                      <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
-                        {course.category_type}
-                      </span>
-                    )}
-                    {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
-                    {course.language && <span className="tag language">{course.language}</span>}
+                  <div className="course-meta-row">
+                    <div className="meta course-meta">
+                      {course.category_type && (
+                        <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
+                          {course.category_type}
+                        </span>
+                      )}
+                      {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
+                      {course.language && <span className="tag language">{course.language}</span>}
+                    </div>
+                    <span className="review-count-text">{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</span>
                   </div>
                   <p className="review-count">{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</p>
                 </Link>

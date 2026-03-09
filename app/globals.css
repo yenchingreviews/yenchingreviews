@@ -29,7 +29,7 @@ a {
   top: 0;
   z-index: 10;
   border-bottom: 1px solid var(--line);
-  background: rgba(247, 242, 232, 0.96);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(5px);
 }
 
@@ -68,7 +68,7 @@ a {
 
 .catalog-grid {
   display: grid;
-  grid-template-columns: minmax(250px, 1fr) minmax(330px, 1.2fr) minmax(420px, 2fr);
+  grid-template-columns: minmax(220px, 0.86fr) minmax(390px, 1.35fr) minmax(420px, 2fr);
   gap: 0;
   align-items: start;
 }
@@ -97,7 +97,7 @@ a {
 
 .panel-title {
   margin: 0 0 0.85rem;
-  font-size: 0.78rem;
+  font-size: 0.86rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--muted);
@@ -114,7 +114,7 @@ a {
 
 .filter-group h3 {
   margin: 0 0 0.45rem;
-  font-size: 0.83rem;
+  font-size: 0.79rem;
   color: var(--muted);
 }
 
@@ -197,7 +197,7 @@ a {
 }
 
 .tag {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 0.13rem 0.5rem;
@@ -221,14 +221,14 @@ a {
   background: #efe8db;
 }
 
-.track-amber { background: #f7e7bd; border-color: #edd7a3; color: #5b3c11; }
-.track-blue { background: #dfe9ff; border-color: #c5d7ff; color: #1f3b73; }
-.track-rose { background: #ffe2e4; border-color: #f6c7cb; color: #7b2231; }
-.track-violet { background: #ece2ff; border-color: #dac8fd; color: #4d2b75; }
-.track-teal { background: #dff5f1; border-color: #bfe7df; color: #145047; }
-.track-olive { background: #edf2d8; border-color: #dde7c0; color: #4b5b1f; }
-.track-orange { background: #ffe8d6; border-color: #f9d6b6; color: #79411f; }
-.track-default { background: #f5f0e8; }
+.track-econ { background: #dde3f1; border-color: #c2cbdf; color: #33496f; }
+.track-general { background: #efe8ff; border-color: #dbcfff; color: #55327f; }
+.track-history { background: #ead7c4; border-color: #d9bea0; color: #6f4a2b; }
+.track-law { background: #ddefe4; border-color: #c8dfd1; color: #24543d; }
+.track-literature { background: #ffe6d2; border-color: #f3cfad; color: #7f431d; }
+.track-philosophy { background: #f8edbf; border-color: #e9d99a; color: #6a5313; }
+.track-politics { background: #d8e2f3; border-color: #bdcde9; color: #1d355f; }
+.track-default { background: #f5f0e8; border-color: #e2d6c8; color: #5f5247; }
 
 .detail-meta {
   margin: 0.58rem 0 0.3rem;
@@ -252,8 +252,9 @@ a {
 }
 
 .review-card p {
-  margin: 0.52rem 0;
-  line-height: 1.44;
+  margin: 0.5rem 0;
+  line-height: 1.4;
+  font-size: 0.9rem;
 }
 
 .review-topline {
@@ -359,9 +360,9 @@ a {
 }
 
 .filter-tag {
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 0.3rem 0.72rem;
+  font-size: 0.84rem;
+  font-weight: 620;
+  padding: 0.38rem 0.86rem;
   cursor: pointer;
   transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
 }
@@ -374,13 +375,18 @@ a {
 
 .filter-tag.active {
   transform: translateY(-1px);
-  border-color: #8f6f54;
+  border-color: var(--brand-red);
   color: #2a2018;
-  box-shadow: 0 0 0 1px rgba(104, 77, 54, 0.35), 0 5px 14px rgba(56, 38, 24, 0.12);
+  box-shadow: 0 0 0 1px #e6b1b5, 0 5px 14px rgba(56, 38, 24, 0.12);
 }
 
 .filter-tag.all-tag {
   background: #efe5d8;
+  color: #5c4a3b;
+}
+
+.filter-tag.track-all {
+  background: #ffffff;
   color: #5c4a3b;
 }
 
@@ -403,19 +409,26 @@ a {
 .course-link {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.34rem;
   min-height: 100%;
 }
 
-.review-count {
-  margin: 0;
-  align-self: flex-end;
-  font-size: 0.76rem;
-  color: #7c6d60;
-  border: 1px solid #dfd0bf;
-  background: #f8f1e7;
-  border-radius: 999px;
-  padding: 0.15rem 0.55rem;
+.course-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.course-meta {
+  gap: 0.28rem;
+}
+
+.review-count-text {
+  font-size: 0.79rem;
+  color: #7b6e62;
+  white-space: nowrap;
+  margin-left: 1.2rem;
 }
 
 .catalog-search {
@@ -424,6 +437,14 @@ a {
 
 .catalog-search:hover {
   border-color: #c8b39d;
+}
+
+.panel-title-filters {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #5a4838;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .catalog-search:focus {

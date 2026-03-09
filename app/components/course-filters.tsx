@@ -17,20 +17,33 @@ type CourseFiltersProps = {
 };
 
 function trackToken(trackName: string | null) {
-  if (!trackName) return 'track-default';
+  switch (trackName) {
+    case 'Economics and Management':
+      return 'track-econ';
+    case 'General Elective':
+      return 'track-general';
+    case 'History and Archaeology':
+      return 'track-history';
+    case 'Law and Society':
+      return 'track-law';
+    case 'Literature and Culture':
+      return 'track-literature';
+    case 'Philosophy and Religion':
+      return 'track-philosophy';
+    case 'Politics and International Relations':
+      return 'track-politics';
+    default:
+      return 'track-default';
+  }
+}
 
-  const palette = [
-    'track-amber',
-    'track-blue',
-    'track-rose',
-    'track-violet',
-    'track-teal',
-    'track-olive',
-    'track-orange',
-  ];
+function parseParamList(value: string | null) {
+  if (!value) return [];
+  return value.split(',').map((entry) => entry.trim()).filter(Boolean);
+}
 
-  const hash = Array.from(trackName).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return palette[hash % palette.length];
+function serializeParamList(values: string[]) {
+  return values.join(',');
 }
 
 function parseParamList(value: string | null) {
@@ -120,7 +133,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
   return (
     <section className="filter-panel">
       <div className="panel-header-row">
-        <h2 className="panel-title">Filters</h2>
+        <h2 className="panel-title panel-title-filters">Filters</h2>
         <button type="button" className={`clear-filters ${anyFilterActive ? 'is-active' : ''}`} onClick={resetAll}>
           Clear all
         </button>
@@ -154,7 +167,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
         <div className="filter-row">
           <button
             type="button"
-            className={`tag filter-tag all-tag ${selected.trackNames.length === 0 ? 'active all-active' : ''}`}
+            className={`tag filter-tag all-tag track-all ${selected.trackNames.length === 0 ? 'active all-active' : ''}`}
             onClick={() => resetGroup('track_name')}
           >
             All

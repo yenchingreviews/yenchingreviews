@@ -22,6 +22,16 @@ const TERM_SEASON_RANK: Record<string, number> = {
   winter: 1,
 };
 
+const TRACK_ORDER: Record<string, number> = {
+  'Economics and Management': 0,
+  'History and Archaeology': 1,
+  'Law and Society': 2,
+  'Literature and Culture': 3,
+  'Philosophy and Religion': 4,
+  'Politics and International Relations': 5,
+  'General Elective': 999,
+};
+
 function normalizeSeason(season: string | null | undefined) {
   return season?.trim().toLowerCase() ?? '';
 }
@@ -60,6 +70,13 @@ function normalizeTrackName(trackName: string | null | undefined) {
   return cleaned;
 }
 
+function normalizeLanguage(language: string | null | undefined) {
+  if (!language) return '';
+  const cleaned = language.trim().replace(/\s+/g, ' ');
+  if (!cleaned || cleaned.includes('/')) return '';
+  return cleaned;
+}
+
 function categorySort(a: string, b: string) {
   const priority: Record<string, number> = {
     Yenching: 0,
@@ -68,6 +85,13 @@ function categorySort(a: string, b: string) {
 
   const rankA = priority[a] ?? 99;
   const rankB = priority[b] ?? 99;
+  if (rankA !== rankB) return rankA - rankB;
+  return a.localeCompare(b);
+}
+
+function trackSort(a: string, b: string) {
+  const rankA = TRACK_ORDER[a] ?? 100;
+  const rankB = TRACK_ORDER[b] ?? 100;
   if (rankA !== rankB) return rankA - rankB;
   return a.localeCompare(b);
 }
@@ -120,6 +144,7 @@ export async function getCourses(filters: CourseFilters) {
   let courses = ((data ?? []) as Course[]).map((course) => ({
     ...course,
     track_name: normalizeTrackName(course.track_name),
+    language: normalizeLanguage(course.language),
   }));
 
   if ((filters.trackNames ?? []).length > 0) {
@@ -200,12 +225,14 @@ export async function getCourseFilterOptions() {
   (data ?? []).forEach((row) => {
     if (row.category_type) categories.add(row.category_type);
     if (row.track_name) tracks.add(normalizeTrackName(row.track_name));
-    if (row.language) languages.add(row.language);
+
+    const language = normalizeLanguage(row.language);
+    if (language) languages.add(language);
   });
 
   return {
     categories: Array.from(categories).sort(categorySort),
-    tracks: Array.from(tracks).sort(),
+    tracks: Array.from(tracks).sort(trackSort),
     languages: Array.from(languages).sort(),
   };
 }
@@ -240,6 +267,7 @@ export async function getCourseById(courseId: string) {
       ? {
           ...course,
           track_name: normalizeTrackName(course.track_name),
+          language: normalizeLanguage(course.language),
         }
       : null,
     error: null,
