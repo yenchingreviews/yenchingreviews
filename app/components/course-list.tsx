@@ -10,19 +10,31 @@ type CourseListProps = {
   selectedCourseId?: string;
   activeQuery: {
     search: string;
-    categoryType: string;
-    trackName: string;
-    language: string;
+    categoryTypes: string[];
+    trackNames: string[];
+    languages: string[];
   };
 };
 
 function trackToken(trackName: string | null) {
-  if (!trackName) return 'track-default';
-
-  const palette = ['track-amber', 'track-blue', 'track-rose', 'track-violet', 'track-teal', 'track-olive', 'track-orange'];
-
-  const hash = Array.from(trackName).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return palette[hash % palette.length];
+  switch (trackName) {
+    case 'Economics and Management':
+      return 'track-econ';
+    case 'General Elective':
+      return 'track-general';
+    case 'History and Archaeology':
+      return 'track-history';
+    case 'Law and Society':
+      return 'track-law';
+    case 'Literature and Culture':
+      return 'track-literature';
+    case 'Philosophy and Religion':
+      return 'track-philosophy';
+    case 'Politics and International Relations':
+      return 'track-politics';
+    default:
+      return 'track-default';
+  }
 }
 
 export function CourseList({ courses, selectedCourseId, activeQuery }: CourseListProps) {
@@ -78,25 +90,29 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
           {courses.map((course) => {
             const params = new URLSearchParams();
             if (activeQuery.search) params.set('search', activeQuery.search);
-            if (activeQuery.categoryType) params.set('category_type', activeQuery.categoryType);
-            if (activeQuery.trackName) params.set('track_name', activeQuery.trackName);
-            if (activeQuery.language) params.set('language', activeQuery.language);
+            if (activeQuery.categoryTypes.length > 0) params.set('category_type', activeQuery.categoryTypes.join(','));
+            if (activeQuery.trackNames.length > 0) params.set('track_name', activeQuery.trackNames.join(','));
+            if (activeQuery.languages.length > 0) params.set('language', activeQuery.languages.join(','));
             params.set('selected_course_id', course.course_id);
 
             const isActive = selectedCourseId === course.course_id;
+            const reviewCount = course.review_count ?? 0;
 
             return (
               <li key={course.course_id} className={`course-item ${isActive ? 'selected' : ''}`}>
                 <Link href={`/?${params.toString()}`} scroll={false} className="course-link">
                   <h3 className="course-name">{course.course_name}</h3>
-                  <div className="meta">
-                    {course.category_type && (
-                      <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
-                        {course.category_type}
-                      </span>
-                    )}
-                    {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
-                    {course.language && <span className="tag language">{course.language}</span>}
+                  <div className="course-meta-row">
+                    <div className="meta course-meta">
+                      {course.category_type && (
+                        <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
+                          {course.category_type}
+                        </span>
+                      )}
+                      {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
+                      {course.language && <span className="tag language">{course.language}</span>}
+                    </div>
+                    <span className="review-count-text">{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</span>
                   </div>
                 </Link>
               </li>
