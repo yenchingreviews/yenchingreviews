@@ -16,12 +16,20 @@ type HomePageProps = {
   };
 };
 
+function parseMultiValue(raw: string | undefined) {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const selected = {
     search: searchParams.search ?? '',
-    categoryType: searchParams.category_type ?? '',
-    trackName: searchParams.track_name ?? '',
-    language: searchParams.language ?? '',
+    categoryTypes: parseMultiValue(searchParams.category_type),
+    trackNames: parseMultiValue(searchParams.track_name),
+    languages: parseMultiValue(searchParams.language),
     selectedCourseId: searchParams.selected_course_id ?? '',
   };
 
@@ -29,9 +37,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     getCourseFilterOptions(),
     getCourses({
       search: selected.search,
-      categoryType: selected.categoryType,
-      trackName: selected.trackName,
-      language: selected.language,
+      categoryTypes: selected.categoryTypes,
+      trackNames: selected.trackNames,
+      languages: selected.languages,
     }),
   ]);
 
@@ -52,7 +60,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         <div className="catalog-grid">
           <div className="left-column">
-            <CourseFilters selected={{ categoryType: selected.categoryType, trackName: selected.trackName, language: selected.language }} options={filters} />
+            <CourseFilters selected={{ categoryTypes: selected.categoryTypes, trackNames: selected.trackNames, languages: selected.languages }} options={filters} />
           </div>
           <div className="middle-column">
             <CourseList

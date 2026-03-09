@@ -4,9 +4,9 @@ import type { Course, Review } from '@/types/course';
 
 type CourseFilters = {
   search?: string;
-  categoryType?: string;
-  trackName?: string;
-  language?: string;
+  categoryTypes?: string[];
+  trackNames?: string[];
+  languages?: string[];
 };
 
 const COURSE_SELECT_COLUMNS =
@@ -39,12 +39,37 @@ function sortReviewsByChronology(reviews: Review[]) {
     if (seasonDiff !== 0) return seasonDiff;
 
     const orderDiff =
-      (a.review_order_in_term_left_to_right ?? Number.MAX_SAFE_INTEGER) -
-      (b.review_order_in_term_left_to_right ?? Number.MAX_SAFE_INTEGER);
+      (b.review_order_in_term_left_to_right ?? Number.MIN_SAFE_INTEGER) -
+      (a.review_order_in_term_left_to_right ?? Number.MIN_SAFE_INTEGER);
     if (orderDiff !== 0) return orderDiff;
 
     return a.review_id.localeCompare(b.review_id);
   });
+}
+
+function normalizeTrackName(trackName: string | null | undefined) {
+  if (!trackName) return '';
+
+  const cleaned = trackName.trim().replace(/\s+/g, ' ');
+  const normalized = cleaned.toLowerCase();
+
+  if (normalized === 'international law') {
+    return 'International Law';
+  }
+
+  return cleaned;
+}
+
+function categorySort(a: string, b: string) {
+  const priority: Record<string, number> = {
+    Yenching: 0,
+    'PKU Wide': 1,
+  };
+
+  const rankA = priority[a] ?? 99;
+  const rankB = priority[b] ?? 99;
+  if (rankA !== rankB) return rankA - rankB;
+  return a.localeCompare(b);
 }
 
 function escapeLikeTerm(value: string) {
@@ -75,16 +100,12 @@ export async function getCourses(filters: CourseFilters) {
     );
   }
 
-  if (filters.categoryType?.trim()) {
-    query = query.eq('category_type', filters.categoryType.trim());
+  if ((filters.categoryTypes ?? []).length > 0) {
+    query = query.in('category_type', filters.categoryTypes ?? []);
   }
 
-  if (filters.trackName?.trim()) {
-    query = query.eq('track_name', filters.trackName.trim());
-  }
-
-  if (filters.language?.trim()) {
-    query = query.eq('language', filters.language.trim());
+  if ((filters.languages ?? []).length > 0) {
+    query = query.in('language', filters.languages ?? []);
   }
 
   const { data, error } = await query;
@@ -96,8 +117,37 @@ export async function getCourses(filters: CourseFilters) {
     };
   }
 
+  let courses = ((data ?? []) as Course[]).map((course) => ({
+    ...course,
+    track_name: normalizeTrackName(course.track_name),
+  }));
+
+  if ((filters.trackNames ?? []).length > 0) {
+    const selectedTracks = new Set((filters.trackNames ?? []).map((track) => normalizeTrackName(track)));
+    courses = courses.filter((course) => selectedTracks.has(normalizeTrackName(course.track_name)));
+  }
+
+  const courseIds = courses.map((course) => course.course_id);
+  const reviewCounts = new Map<string, number>();
+
+  if (courseIds.length > 0) {
+    const { data: reviewRows } = await supabase
+      .from('reviews')
+      .select('course_id')
+      .in('course_id', courseIds);
+
+    (reviewRows ?? []).forEach((row) => {
+      const id = row.course_id as string | null;
+      if (!id) return;
+      reviewCounts.set(id, (reviewCounts.get(id) ?? 0) + 1);
+    });
+  }
+
   return {
-    courses: (data ?? []) as Course[],
+    courses: courses.map((course) => ({
+      ...course,
+      review_count: reviewCounts.get(course.course_id) ?? 0,
+    })),
     error: null,
   };
 }
@@ -149,12 +199,12 @@ export async function getCourseFilterOptions() {
 
   (data ?? []).forEach((row) => {
     if (row.category_type) categories.add(row.category_type);
-    if (row.track_name) tracks.add(row.track_name);
+    if (row.track_name) tracks.add(normalizeTrackName(row.track_name));
     if (row.language) languages.add(row.language);
   });
 
   return {
-    categories: Array.from(categories).sort(),
+    categories: Array.from(categories).sort(categorySort),
     tracks: Array.from(tracks).sort(),
     languages: Array.from(languages).sort(),
   };
@@ -183,8 +233,15 @@ export async function getCourseById(courseId: string) {
     };
   }
 
+  const course = (data as Course | null) ?? null;
+
   return {
-    course: (data as Course | null) ?? null,
+    course: course
+      ? {
+          ...course,
+          track_name: normalizeTrackName(course.track_name),
+        }
+      : null,
     error: null,
   };
 }
@@ -212,7 +269,7 @@ export async function getCourseReviews(courseId: string) {
   }
 
   return {
-    reviews: (data ?? []) as Review[],
+    reviews: sortReviewsByChronology((data ?? []) as Review[]),
     error: null,
   };
 }
