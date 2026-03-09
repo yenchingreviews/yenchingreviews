@@ -10,9 +10,9 @@ type CourseListProps = {
   selectedCourseId?: string;
   activeQuery: {
     search: string;
-    categoryType: string;
-    trackName: string;
-    language: string;
+    categoryTypes: string[];
+    trackNames: string[];
+    languages: string[];
   };
 };
 
@@ -78,12 +78,13 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
           {courses.map((course) => {
             const params = new URLSearchParams();
             if (activeQuery.search) params.set('search', activeQuery.search);
-            if (activeQuery.categoryType) params.set('category_type', activeQuery.categoryType);
-            if (activeQuery.trackName) params.set('track_name', activeQuery.trackName);
-            if (activeQuery.language) params.set('language', activeQuery.language);
+            if (activeQuery.categoryTypes.length > 0) params.set('category_type', activeQuery.categoryTypes.join(','));
+            if (activeQuery.trackNames.length > 0) params.set('track_name', activeQuery.trackNames.join(','));
+            if (activeQuery.languages.length > 0) params.set('language', activeQuery.languages.join(','));
             params.set('selected_course_id', course.course_id);
 
             const isActive = selectedCourseId === course.course_id;
+            const reviewCount = course.review_count ?? 0;
 
             return (
               <li key={course.course_id} className={`course-item ${isActive ? 'selected' : ''}`}>
@@ -98,6 +99,7 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
                     {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
                     {course.language && <span className="tag language">{course.language}</span>}
                   </div>
+                  <p className="review-count">{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</p>
                 </Link>
               </li>
             );
