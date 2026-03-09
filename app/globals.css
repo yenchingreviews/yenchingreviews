@@ -1,5 +1,5 @@
 :root {
-  --cream: #ffffff;
+  --cream: #f5ede2;
   --ink: #28211d;
   --muted: #71665a;
   --line: #e4e4e7;
@@ -35,11 +35,11 @@ a {
   top: 0;
   z-index: 10;
   border-bottom: 1px solid var(--line);
-  background: #ffffff;
+  background: var(--cream);
 }
 
 .topbar-inner {
-  max-width: 1500px;
+  max-width: 1680px;
   margin: 0 auto;
   padding: 0.8rem 1rem;
   display: flex;
@@ -66,9 +66,9 @@ a {
 }
 
 .catalog-page {
-  max-width: 1500px;
+  max-width: 1680px;
   margin: 0 auto;
-  padding: 0.9rem 0.6rem;
+  padding: 0.9rem 1rem;
   height: calc(100vh - 62px);
 }
 
@@ -130,7 +130,7 @@ a {
 
 .course-list {
   overflow-y: auto;
-
+  scrollbar-gutter: stable;
 
   flex: 1;
   min-height: 0;
@@ -271,23 +271,14 @@ a {
   color: #2f241c;
 }
 
-.track-econ { border-color: #4f6283; }
-.track-general { border-color: #a3a3a3; }
-.track-history { border-color: #6a3f22; }
-.track-law { border-color: #346850; }
-.track-literature { border-color: #67a66d; }
-.track-philosophy { border-color: #c89a2e; }
-.track-politics { border-color: #2b466c; }
-.track-default { border-color: #5f5349; }
-
-.filter-tag.track-econ.active { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
-.filter-tag.track-general.active { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
-.filter-tag.track-history.active { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
-.filter-tag.track-law.active { background: #3f7a61; border-color: #346850; color: #ffffff; }
-.filter-tag.track-literature.active { background: #7bbf6a; border-color: #67a66d; color: #ffffff; }
-.filter-tag.track-philosophy.active { background: #f4bf3a; border-color: #c89a2e; color: #ffffff; }
-.filter-tag.track-politics.active { background: #34537f; border-color: #2b466c; color: #ffffff; }
-.filter-tag.track-default.active { background: #6f6258; border-color: #5f5349; color: #ffffff; }
+.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
+.track-general { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
+.track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
+.track-law { background: #3f7a61; border-color: #346850; color: #ffffff; }
+.track-literature { background: #7bbf6a; border-color: #67a66d; color: #ffffff; }
+.track-philosophy { background: #f4bf3a; border-color: #c89a2e; color: #ffffff; }
+.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
+.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
 .detail-meta {
   margin: 0.58rem 0 0.3rem;
@@ -469,18 +460,22 @@ a {
 .filter-tag.active {
   transform: translateY(-1px);
   border-color: var(--brand-red);
-  color: #2a2018;
-  box-shadow: 0 0 0 1px #e6b1b5, 0 5px 14px rgba(56, 38, 24, 0.12);
-}
-
-.filter-tag.active:not(.all-tag):not(.language) {
-  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(180, 35, 42, 0.8), 0 5px 14px rgba(56, 38, 24, 0.12);
 }
 
 .filter-tag {
   background: #ffffff;
   color: #2f241c;
 }
+
+.filter-tag.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
+.filter-tag.track-general { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
+.filter-tag.track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
+.filter-tag.track-law { background: #3f7a61; border-color: #346850; color: #ffffff; }
+.filter-tag.track-literature { background: #7bbf6a; border-color: #67a66d; color: #ffffff; }
+.filter-tag.track-philosophy { background: #f4bf3a; border-color: #c89a2e; color: #ffffff; }
+.filter-tag.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
+.filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
 .filter-tag.all-tag {
   background: #ffffff;
@@ -499,6 +494,7 @@ a {
 }
 
 .course-item {
+  min-height: 5.6rem;
   transition: transform 140ms ease, box-shadow 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
 
@@ -555,11 +551,18 @@ a {
 }
 
 .detail-empty-message {
-  margin: 1.2rem 0 0;
+  margin: 0;
+  padding-top: 30%;
   text-align: left;
   color: #6f6258;
   font-size: 1.08rem;
   line-height: 1.45;
+}
+
+.detail-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .catalog-search:focus {

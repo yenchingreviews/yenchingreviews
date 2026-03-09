@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
+import { trackToken } from '@/app/components/track-token';
 import type { Course } from '@/types/course';
 
 type CourseListProps = {
@@ -15,27 +16,6 @@ type CourseListProps = {
     languages: string[];
   };
 };
-
-function trackToken(trackName: string | null) {
-  switch (trackName) {
-    case 'Economics and Management':
-      return 'track-econ';
-    case 'General Elective':
-      return 'track-general';
-    case 'History and Archaeology':
-      return 'track-history';
-    case 'Law and Society':
-      return 'track-law';
-    case 'Literature and Culture':
-      return 'track-literature';
-    case 'Philosophy and Religion':
-      return 'track-philosophy';
-    case 'Politics and International Relations':
-      return 'track-politics';
-    default:
-      return 'track-default';
-  }
-}
 
 export function CourseList({ courses, selectedCourseId, activeQuery }: CourseListProps) {
   const router = useRouter();
