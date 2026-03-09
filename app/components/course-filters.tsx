@@ -47,6 +47,15 @@ function serializeParamList(values: string[]) {
   return values.join(',');
 }
 
+function parseParamList(value: string | null) {
+  if (!value) return [];
+  return value.split(',').map((entry) => entry.trim()).filter(Boolean);
+}
+
+function serializeParamList(values: string[]) {
+  return values.join(',');
+}
+
 export function CourseFilters({ selected, options }: CourseFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
