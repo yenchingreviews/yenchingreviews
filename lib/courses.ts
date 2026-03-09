@@ -100,7 +100,29 @@ function escapeLikeTerm(value: string) {
   return value.replace(/[%_,]/g, (char) => `\\${char}`);
 }
 
-export async function getCourses(filters: CourseFilters) {
+function dedupeCoursesById(courses: Course[]) {
+  const deduped = new Map<string, Course>();
+
+  courses.forEach((course) => {
+    const current = deduped.get(course.course_id);
+    if (!current) {
+      deduped.set(course.course_id, course);
+      return;
+    }
+
+    const currentTerm = current.latest_name_source_term ?? '';
+    const nextTerm = course.latest_name_source_term ?? '';
+
+    if (nextTerm.localeCompare(currentTerm) >= 0) {
+      deduped.set(course.course_id, course);
+    }
+  });
+
+  return Array.from(deduped.values()).sort((a, b) => a.course_name.localeCompare(b.course_name));
+}
+
+
+export async function getCourses(filters: CourseFilters): Promise<{ courses: Course[]; error: string | null }> {
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
@@ -141,11 +163,13 @@ export async function getCourses(filters: CourseFilters) {
     };
   }
 
-  let courses = ((data ?? []) as Course[]).map((course) => ({
-    ...course,
-    track_name: normalizeTrackName(course.track_name),
-    language: normalizeLanguage(course.language),
-  }));
+  let courses = dedupeCoursesById(
+    ((data ?? []) as Course[]).map((course) => ({
+      ...course,
+      track_name: normalizeTrackName(course.track_name),
+      language: normalizeLanguage(course.language),
+    })),
+  );
 
   if ((filters.trackNames ?? []).length > 0) {
     const selectedTracks = new Set((filters.trackNames ?? []).map((track) => normalizeTrackName(track)));
@@ -226,14 +250,14 @@ export async function getCourseFilterOptions() {
   while (true) {
     const { data, error } = await supabase
       .from('courses')
-      .select('category_type, track_name, language')
+      .select('course_id, course_name, category_type, track_name, language, latest_name_source_term')
       .range(offset, offset + pageSize - 1);
 
     if (error || !data || data.length === 0) {
       break;
     }
 
-    data.forEach((row) => {
+    dedupeCoursesById((data ?? []) as Course[]).forEach((row) => {
       if (row.category_type) categories.add(row.category_type);
       if (row.track_name) tracks.add(normalizeTrackName(row.track_name));
 
