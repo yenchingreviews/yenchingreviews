@@ -10,6 +10,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   background: var(--cream);
@@ -17,6 +22,7 @@ body {
   font-family: 'Avenir Next', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-weight: 450;
   letter-spacing: 0.005em;
+  overflow: hidden;
 }
 
 a {
@@ -64,6 +70,7 @@ a {
   max-width: 1500px;
   margin: 0 auto;
   padding: 0.9rem 0.6rem;
+  height: calc(100vh - 62px);
 }
 
 .catalog-grid {
@@ -71,13 +78,20 @@ a {
   grid-template-columns: minmax(220px, 0.86fr) minmax(390px, 1.35fr) minmax(420px, 2fr);
   gap: 0;
   align-items: start;
+  height: 100%;
 }
 
 .left-column,
 .middle-column,
 .right-column {
   min-height: calc(100vh - 90px);
+  height: 100%;
   padding: 0.75rem 0.9rem;
+}
+
+.middle-column,
+.right-column {
+  overflow: hidden;
 }
 
 .middle-column,
@@ -108,13 +122,37 @@ a {
   top: 4.2rem;
 }
 
+.course-catalog,
+.detail-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-list {
+  overflow-y: auto;
+
+
+  flex: 1;
+  min-height: 0;
+  padding-right: 0.2rem;
+}
+
+.detail-panel {
+  overflow-y: auto;
+}
+
+.review-list {
+  padding-right: 0.2rem;
+}
+
 .filter-group {
   margin-bottom: 1rem;
 }
 
 .filter-group h3 {
   margin: 0 0 0.45rem;
-  font-size: 0.79rem;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 
@@ -221,14 +259,14 @@ a {
   background: #efe8db;
 }
 
-.track-econ { background: #dde3f1; border-color: #c2cbdf; color: #33496f; }
-.track-general { background: #efe8ff; border-color: #dbcfff; color: #55327f; }
-.track-history { background: #ead7c4; border-color: #d9bea0; color: #6f4a2b; }
-.track-law { background: #ddefe4; border-color: #c8dfd1; color: #24543d; }
-.track-literature { background: #ffe6d2; border-color: #f3cfad; color: #7f431d; }
-.track-philosophy { background: #f8edbf; border-color: #e9d99a; color: #6a5313; }
-.track-politics { background: #d8e2f3; border-color: #bdcde9; color: #1d355f; }
-.track-default { background: #f5f0e8; border-color: #e2d6c8; color: #5f5247; }
+.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
+.track-general { background: #7a5b9f; border-color: #6a4e8b; color: #ffffff; }
+.track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
+.track-law { background: #3f7a61; border-color: #346850; color: #ffffff; }
+.track-literature { background: #9a5d36; border-color: #834f2e; color: #ffffff; }
+.track-philosophy { background: #8a7330; border-color: #756228; color: #ffffff; }
+.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
+.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
 .detail-meta {
   margin: 0.58rem 0 0.3rem;
@@ -304,6 +342,32 @@ a {
     grid-column: 1 / -1;
   }
 
+  body {
+    overflow: auto;
+  }
+
+  .catalog-page {
+    height: auto;
+  }
+
+  .catalog-grid {
+    height: auto;
+  }
+
+  .middle-column,
+  .right-column {
+    overflow: visible;
+  }
+
+  .course-catalog,
+  .detail-panel,
+  .course-list,
+  .review-list {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
   .filter-panel {
     position: static;
   }
@@ -335,14 +399,26 @@ a {
   margin-bottom: 0.85rem;
 }
 
+.filters-header-row {
+  justify-content: flex-start;
+  margin-bottom: 0.45rem;
+}
+
+.clear-filters-row {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1rem;
+}
+
 .clear-filters {
   border: 1px solid #d8c7b4;
   background: #f7ecdf;
   color: #6f5b4b;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.28rem 0.72rem;
+  font-size: 0.84rem;
+  font-weight: 650;
+  padding: 0.45rem 1.3rem;
+  min-width: 8.8rem;
   cursor: pointer;
   transition: all 140ms ease;
 }
@@ -380,19 +456,24 @@ a {
   box-shadow: 0 0 0 1px #e6b1b5, 0 5px 14px rgba(56, 38, 24, 0.12);
 }
 
+.filter-tag.active:not(.all-tag) {
+  color: #ffffff;
+}
+
 .filter-tag.all-tag {
-  background: #efe5d8;
-  color: #5c4a3b;
+  background: #ffffff;
+  color: #2f241c;
 }
 
 .filter-tag.track-all {
   background: #ffffff;
-  color: #5c4a3b;
+  color: #2f241c;
 }
 
 .filter-tag.all-tag.all-active {
-  background: #e8d7c1;
-  border-color: #b38c66;
+  background: #ffffff;
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 1px #e6b1b5;
 }
 
 .course-item {
@@ -440,11 +521,26 @@ a {
 }
 
 .panel-title-filters {
-  font-size: 1rem;
+  font-size: 1.12rem;
   font-weight: 700;
   color: #5a4838;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   text-transform: none;
+}
+
+.detail-panel-empty {
+  position: relative;
+}
+
+.detail-empty-message {
+  margin: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6f6258;
+  font-size: 0.95rem;
 }
 
 .catalog-search:focus {
