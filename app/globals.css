@@ -134,7 +134,8 @@ a {
 
   flex: 1;
   min-height: 0;
-  padding-right: 0.2rem;
+  padding: 0.2rem 0.2rem 0 0;
+  align-content: start;
 }
 
 .detail-panel {
@@ -170,7 +171,7 @@ a {
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem 0.55rem;
 }
 
 
@@ -184,14 +185,35 @@ a {
   margin-bottom: 0.75rem;
 }
 
+.catalog-search-wrap {
+  position: relative;
+}
+
 .catalog-search {
   width: 100%;
   min-height: 2.35rem;
-  padding: 0.5rem 0.7rem;
+  padding: 0.5rem 0.7rem 0.5rem 2.1rem;
   border-radius: 9px;
   border: 1px solid var(--line);
   background: #ffffff;
   font-size: 0.93rem;
+}
+
+.catalog-search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8a7d72;
+  width: 0.95rem;
+  height: 0.95rem;
+  pointer-events: none;
+}
+
+.catalog-search-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .catalog-head p {
@@ -207,6 +229,7 @@ a {
   padding: 0;
   display: grid;
   gap: 0.58rem;
+  align-items: start;
 }
 
 .course-item,
@@ -275,7 +298,7 @@ a {
 .track-general { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
 .track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
 .track-law { background: #3f7a61; border-color: #346850; color: #ffffff; }
-.track-literature { background: #7bbf6a; border-color: #67a66d; color: #ffffff; }
+.track-literature { background: #df6ba1; border-color: #c95d91; color: #ffffff; }
 .track-philosophy { background: #f4bf3a; border-color: #c89a2e; color: #ffffff; }
 .track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
 .track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
@@ -411,6 +434,10 @@ a {
   margin-bottom: 0.85rem;
 }
 
+.panel-title-filters {
+  margin: 0;
+}
+
 .filters-header-row {
   justify-content: space-between;
   align-items: center;
@@ -472,7 +499,7 @@ a {
 .filter-tag.track-general { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
 .filter-tag.track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
 .filter-tag.track-law { background: #3f7a61; border-color: #346850; color: #ffffff; }
-.filter-tag.track-literature { background: #7bbf6a; border-color: #67a66d; color: #ffffff; }
+.filter-tag.track-literature { background: #df6ba1; border-color: #c95d91; color: #ffffff; }
 .filter-tag.track-philosophy { background: #f4bf3a; border-color: #c89a2e; color: #ffffff; }
 .filter-tag.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
 .filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
@@ -494,7 +521,6 @@ a {
 }
 
 .course-item {
-  min-height: 5.6rem;
   transition: transform 140ms ease, box-shadow 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
 
@@ -509,7 +535,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.34rem;
-  min-height: 100%;
 }
 
 .course-meta-row {
@@ -553,7 +578,7 @@ a {
 .detail-empty-message {
   margin: 0;
   padding-top: 30%;
-  text-align: left;
+  text-align: center;
   color: #6f6258;
   font-size: 1.08rem;
   line-height: 1.45;

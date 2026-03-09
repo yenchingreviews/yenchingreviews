@@ -54,12 +54,22 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
   return (
     <section className="course-catalog">
       <div className="catalog-head">
-        <input
-          placeholder="Search courses by keyword"
-          value={searchValue}
-          onChange={(event) => setSearchValue(event.target.value)}
-          className="catalog-search"
-        />
+        <div className="catalog-search-wrap">
+          <span className="catalog-search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <path
+                d="M10.5 3.75a6.75 6.75 0 1 0 4.243 11.996l4.255 4.254a.75.75 0 1 0 1.06-1.06l-4.254-4.255A6.75 6.75 0 0 0 10.5 3.75Zm0 1.5a5.25 5.25 0 1 1 0 10.5 5.25 5.25 0 0 1 0-10.5Z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <input
+            placeholder="Search course names by keyword..."
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value)}
+            className="catalog-search"
+          />
+        </div>
         <p>{isPending ? 'Updating…' : `${courses.length} courses`}</p>
       </div>
 
