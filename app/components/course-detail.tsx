@@ -15,7 +15,6 @@ export function CourseDetail({ course, reviews }: CourseDetailProps) {
   if (!course) {
     return (
       <section className="panel detail-panel detail-panel-empty">
-        <h2 className="panel-title panel-title-filters">Course details</h2>
         <p className="detail-empty-message">Select a course from the catalog to see reviews.</p>
       </section>
     );
