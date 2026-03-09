@@ -216,19 +216,37 @@ export async function getCourseFilterOptions() {
     };
   }
 
-  const { data } = await supabase.from('courses').select('category_type, track_name, language').limit(5000);
-
   const categories = new Set<string>();
   const tracks = new Set<string>();
   const languages = new Set<string>();
 
-  (data ?? []).forEach((row) => {
-    if (row.category_type) categories.add(row.category_type);
-    if (row.track_name) tracks.add(normalizeTrackName(row.track_name));
+  const pageSize = 1000;
+  let offset = 0;
 
-    const language = normalizeLanguage(row.language);
-    if (language) languages.add(language);
-  });
+  while (true) {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('category_type, track_name, language')
+      .range(offset, offset + pageSize - 1);
+
+    if (error || !data || data.length === 0) {
+      break;
+    }
+
+    data.forEach((row) => {
+      if (row.category_type) categories.add(row.category_type);
+      if (row.track_name) tracks.add(normalizeTrackName(row.track_name));
+
+      const language = normalizeLanguage(row.language);
+      if (language) languages.add(language);
+    });
+
+    if (data.length < pageSize) {
+      break;
+    }
+
+    offset += pageSize;
+  }
 
   return {
     categories: Array.from(categories).sort(categorySort),

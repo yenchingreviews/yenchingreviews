@@ -114,7 +114,6 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
                     </div>
                     <span className="review-count-text">{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</span>
                   </div>
-                  <p className="review-count">{reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}</p>
                 </Link>
               </li>
             );
