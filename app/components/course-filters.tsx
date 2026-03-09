@@ -126,10 +126,8 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
     <section className="filter-panel">
       <div className="panel-header-row filters-header-row">
         <h2 className="panel-title panel-title-filters">Filters</h2>
-      </div>
-      <div className="clear-filters-row">
         <button type="button" className={`clear-filters ${anyFilterActive ? 'is-active' : ''}`} onClick={resetAll}>
-          Clear all
+          Clear All
         </button>
       </div>
 

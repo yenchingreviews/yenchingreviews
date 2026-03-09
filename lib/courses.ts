@@ -132,39 +132,63 @@ export async function getCourses(filters: CourseFilters): Promise<{ courses: Cou
     };
   }
 
-  let query = supabase.from('courses').select(COURSE_SELECT_COLUMNS).order('course_name', { ascending: true });
+  const pageSize = 1000;
+  let offset = 0;
+  const allRows: Course[] = [];
 
-  if (filters.search?.trim()) {
-    const searchTerm = escapeLikeTerm(filters.search.trim());
-    query = query.or(
-      [
-        `course_name.ilike.%${searchTerm}%`,
-        `name_variants.ilike.%${searchTerm}%`,
-        `track_name.ilike.%${searchTerm}%`,
-        `category_type.ilike.%${searchTerm}%`,
-      ].join(','),
-    );
-  }
+  while (true) {
+    let query = supabase
+      .from('courses')
+      .select(COURSE_SELECT_COLUMNS)
+      .order('course_name', { ascending: true })
+      .range(offset, offset + pageSize - 1);
 
-  if ((filters.categoryTypes ?? []).length > 0) {
-    query = query.in('category_type', filters.categoryTypes ?? []);
-  }
+    if (filters.search?.trim()) {
+      const searchTerm = escapeLikeTerm(filters.search.trim());
+      query = query.or(
+        [
+          `course_name.ilike.%${searchTerm}%`,
+          `name_variants.ilike.%${searchTerm}%`,
+          `track_name.ilike.%${searchTerm}%`,
+          `category_type.ilike.%${searchTerm}%`,
+        ].join(','),
+      );
+    }
 
-  if ((filters.languages ?? []).length > 0) {
-    query = query.in('language', filters.languages ?? []);
-  }
+    if ((filters.categoryTypes ?? []).length > 0) {
+      query = query.in('category_type', filters.categoryTypes ?? []);
+    }
 
-  const { data, error } = await query;
+    if ((filters.languages ?? []).length > 0) {
+      query = query.in('language', filters.languages ?? []);
+    }
 
-  if (error) {
-    return {
-      courses: [] as Course[],
-      error: `Could not load courses: ${error.message}`,
-    };
+    const { data, error } = await query;
+
+    if (error) {
+      return {
+        courses: [] as Course[],
+        error: `Could not load courses: ${error.message}`,
+      };
+    }
+
+    const rows = (data ?? []) as Course[];
+
+    if (rows.length === 0) {
+      break;
+    }
+
+    allRows.push(...rows);
+
+    if (rows.length < pageSize) {
+      break;
+    }
+
+    offset += pageSize;
   }
 
   let courses = dedupeCoursesById(
-    ((data ?? []) as Course[]).map((course) => ({
+    allRows.map((course) => ({
       ...course,
       track_name: normalizeTrackName(course.track_name),
       language: normalizeLanguage(course.language),
