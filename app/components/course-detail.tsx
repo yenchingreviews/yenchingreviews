@@ -37,7 +37,6 @@ export function CourseDetail({ course, reviews }: CourseDetailProps) {
 
       <div className="reviews-heading">
         <h3>Reviews</h3>
-        <span>{reviews.length}</span>
       </div>
 
       {reviews.length === 0 ? (

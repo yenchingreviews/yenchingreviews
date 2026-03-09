@@ -8,6 +8,7 @@ export type Course = {
   name_variants: string | null;
   source_terms_present: string | null;
   notes: string | null;
+  review_count?: number;
 };
 
 export type Review = {
