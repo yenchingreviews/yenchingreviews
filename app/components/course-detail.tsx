@@ -1,3 +1,4 @@
+import { trackToken } from '@/app/components/track-token';
 import type { Course, Review } from '@/types/course';
 
 type CourseDetailProps = {
@@ -22,17 +23,19 @@ export function CourseDetail({ course, reviews }: CourseDetailProps) {
 
   return (
     <section className="panel detail-panel">
-      <h2 className="detail-name">{course.course_name}</h2>
-      <div className="meta detail-meta">
-        {course.category_type && (
-          <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
-            {course.category_type}
-          </span>
-        )}
-        {course.track_name && <span className="tag">{course.track_name}</span>}
-        {course.language && <span className="tag language">{course.language}</span>}
+      <div className="detail-header">
+        <h2 className="detail-name">{course.course_name}</h2>
+        <div className="meta detail-meta">
+          {course.category_type && (
+            <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
+              {course.category_type}
+            </span>
+          )}
+          {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
+          {course.language && <span className="tag language">{course.language}</span>}
+        </div>
+        {course.notes && <p className="course-notes">{course.notes}</p>}
       </div>
-      {course.notes && <p className="course-notes">{course.notes}</p>}
 
       <div className="reviews-heading">
         <h3>Reviews</h3>
