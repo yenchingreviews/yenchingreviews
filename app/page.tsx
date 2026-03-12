@@ -2,6 +2,7 @@ import { CourseDetail } from '@/app/components/course-detail';
 import { CourseFilters } from '@/app/components/course-filters';
 import { CourseList } from '@/app/components/course-list';
 import { Header } from '@/app/components/header';
+import { ReviewSubmissionModal } from '@/app/components/review-submission-modal';
 import { getCourseFilterOptions, getCourses, getReviewsForCourse } from '@/lib/courses';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,7 @@ type HomePageProps = {
     track_name?: string;
     language?: string;
     selected_course_id?: string;
+    review_mode?: string;
   };
 };
 
@@ -44,6 +46,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   ]);
 
   const selectedCourse = results.courses.find((course) => course.course_id === selected.selectedCourseId) ?? null;
+  const reviewMode = searchParams.review_mode === 'global' || searchParams.review_mode === 'selected' ? searchParams.review_mode : null;
 
   const reviewResults = selectedCourse
     ? await getReviewsForCourse(selectedCourse.course_id)
@@ -52,9 +55,20 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         error: null,
       };
 
+  const globalParams = new URLSearchParams();
+  if (selected.search) globalParams.set('search', selected.search);
+  if (selected.categoryTypes.length > 0) globalParams.set('category_type', selected.categoryTypes.join(','));
+  if (selected.trackNames.length > 0) globalParams.set('track_name', selected.trackNames.join(','));
+  if (selected.languages.length > 0) globalParams.set('language', selected.languages.join(','));
+  if (selected.selectedCourseId) globalParams.set('selected_course_id', selected.selectedCourseId);
+  globalParams.set('review_mode', 'global');
+
+  const selectedParams = new URLSearchParams(globalParams.toString());
+  selectedParams.set('review_mode', 'selected');
+
   return (
     <>
-      <Header />
+      <Header addReviewHref={`/?${globalParams.toString()}`} />
       <main className="catalog-page">
         {(results.error || reviewResults.error) && <p className="notice">{results.error ?? reviewResults.error}</p>}
 
@@ -70,9 +84,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             />
           </div>
           <div className="right-column">
-            <CourseDetail course={selectedCourse} reviews={reviewResults.reviews} />
+            <CourseDetail course={selectedCourse} reviews={reviewResults.reviews} writeReviewHref={selectedCourse ? `/?${selectedParams.toString()}` : null} />
           </div>
         </div>
+
+        <ReviewSubmissionModal mode={reviewMode} courses={results.courses} selectedCourse={selectedCourse} trackOptions={filters.tracks} />
       </main>
     </>
   );

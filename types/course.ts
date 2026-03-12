@@ -8,6 +8,9 @@ export type Course = {
   name_variants: string | null;
   source_terms_present: string | null;
   notes: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  legacy_course?: boolean | null;
   review_count?: number;
 };
 
@@ -27,7 +30,7 @@ export type Review = {
   is_anonymous: boolean | null;
   legacy_review: boolean | null;
   rating_quality: number | null;
-  rating_workload: number | null;
+  rating_workload: 'Light' | 'Moderate' | 'Heavy' | string | null;
   used_for_track_credit: boolean | null;
   used_for_track: string | null;
   source_sheet: string | null;

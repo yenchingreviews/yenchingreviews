@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export function Header() {
+type HeaderProps = {
+  addReviewHref: string;
+};
+
+export function Header({ addReviewHref }: HeaderProps) {
   return (
     <header className="topbar">
       <div className="topbar-inner">
@@ -10,6 +14,9 @@ export function Header() {
         <nav>
           <Link href="/" className="nav-link is-active">
             Catalog
+          </Link>
+          <Link href={addReviewHref} className="nav-link nav-link-cta">
+            Add Review
           </Link>
         </nav>
       </div>
