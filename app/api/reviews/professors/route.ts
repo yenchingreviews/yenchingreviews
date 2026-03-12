@@ -1,3 +1,4 @@
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ professors: [] });
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient() ?? createSupabaseServerClient();
   if (!supabase) {
     return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 500 });
   }
