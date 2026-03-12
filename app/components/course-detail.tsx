@@ -1,9 +1,11 @@
+import Link from 'next/link';
 import { trackToken } from '@/app/components/track-token';
 import type { Course, Review } from '@/types/course';
 
 type CourseDetailProps = {
   course: Course | null;
   reviews: Review[];
+  writeReviewHref: string | null;
 };
 
 function renderTerm(review: Review) {
@@ -12,7 +14,7 @@ function renderTerm(review: Review) {
   return 'Term unavailable';
 }
 
-export function CourseDetail({ course, reviews }: CourseDetailProps) {
+export function CourseDetail({ course, reviews, writeReviewHref }: CourseDetailProps) {
   if (!course) {
     return (
       <section className="panel detail-panel detail-panel-empty">
@@ -39,6 +41,11 @@ export function CourseDetail({ course, reviews }: CourseDetailProps) {
 
       <div className="reviews-heading">
         <h3>Reviews</h3>
+        {writeReviewHref && (
+          <Link href={writeReviewHref} className="inline-cta-button" scroll={false}>
+            Write a Review
+          </Link>
+        )}
       </div>
 
       {reviews.length === 0 ? (
@@ -55,7 +62,7 @@ export function CourseDetail({ course, reviews }: CourseDetailProps) {
 
               <div className="review-meta">
                 {review.rating_quality !== null && <span>Quality: {review.rating_quality}/5</span>}
-                {review.rating_workload !== null && <span>Workload: {review.rating_workload}/5</span>}
+                {review.rating_workload !== null && <span>Workload: {review.rating_workload}</span>}
                 {review.used_for_track_credit !== null && (
                   <span>{review.used_for_track_credit ? 'Used for track credit' : 'Not used for track credit'}</span>
                 )}

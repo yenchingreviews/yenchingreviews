@@ -1,3 +1,4 @@
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import { getSupabaseSetupMessage } from '@/lib/supabase/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Course, Review } from '@/types/course';
@@ -124,6 +125,7 @@ function dedupeCoursesById(courses: Course[]) {
 
 export async function getCourses(filters: CourseFilters): Promise<{ courses: Course[]; error: string | null }> {
   const supabase = createSupabaseServerClient();
+  const reviewReadClient = createSupabaseAdminClient() ?? supabase;
 
   if (!supabase) {
     return {
@@ -203,8 +205,8 @@ export async function getCourses(filters: CourseFilters): Promise<{ courses: Cou
   const courseIds = courses.map((course) => course.course_id);
   const reviewCounts = new Map<string, number>();
 
-  if (courseIds.length > 0) {
-    const { data: reviewRows } = await supabase
+  if (courseIds.length > 0 && reviewReadClient) {
+    const { data: reviewRows } = await reviewReadClient
       .from('reviews')
       .select('course_id')
       .in('course_id', courseIds);
@@ -227,15 +229,16 @@ export async function getCourses(filters: CourseFilters): Promise<{ courses: Cou
 
 export async function getReviewsForCourse(courseId: string) {
   const supabase = createSupabaseServerClient();
+  const reviewReadClient = createSupabaseAdminClient() ?? supabase;
 
-  if (!supabase) {
+  if (!reviewReadClient) {
     return {
       reviews: [] as Review[],
       error: getSupabaseSetupMessage(),
     };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await reviewReadClient
     .from('reviews')
     .select(REVIEW_SELECT_COLUMNS)
     .eq('course_id', courseId);
@@ -342,15 +345,16 @@ export async function getCourseById(courseId: string) {
 
 export async function getCourseReviews(courseId: string) {
   const supabase = createSupabaseServerClient();
+  const reviewReadClient = createSupabaseAdminClient() ?? supabase;
 
-  if (!supabase) {
+  if (!reviewReadClient) {
     return {
       reviews: [] as Review[],
       error: getSupabaseSetupMessage(),
     };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await reviewReadClient
     .from('reviews')
     .select('*')
     .eq('course_id', courseId);
