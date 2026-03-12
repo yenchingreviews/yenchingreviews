@@ -1,4 +1,4 @@
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 import type { Course } from '@/types/course';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
@@ -155,10 +155,10 @@ function getNextCourseId(courses: Pick<Course, 'course_id'>[]) {
   return `USR-${randomUUID().slice(0, 8).toUpperCase()}`;
 }
 
-async function findCourseByNameCaseInsensitive(courseName: string) {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return { course: null, error: 'Supabase is not configured.' };
-
+async function findCourseByNameCaseInsensitive(
+  supabase: NonNullable<ReturnType<typeof createSupabaseAdminClient>>,
+  courseName: string,
+) {
   const { data, error } = await supabase
     .from('courses')
     .select('course_id, course_name, category_type, track_name')
@@ -187,9 +187,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   if (!supabase) {
-    return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Supabase admin client is not configured. Missing SUPABASE_SERVICE_ROLE_KEY or Supabase URL.' },
+      { status: 500 },
+    );
   }
 
   let courseRow: CourseRow | null = null;
@@ -207,7 +210,7 @@ export async function POST(request: Request) {
 
     courseRow = selectedCourse as CourseRow;
   } else {
-    const foundCourse = await findCourseByNameCaseInsensitive(parsed.value.courseName);
+    const foundCourse = await findCourseByNameCaseInsensitive(supabase, parsed.value.courseName);
     if (foundCourse.error) {
       return NextResponse.json({ error: `Could not verify course: ${foundCourse.error}` }, { status: 500 });
     }
@@ -242,7 +245,7 @@ export async function POST(request: Request) {
 
       if (insertedCourseError) {
         if (insertedCourseError.code === '23505') {
-          const fallbackCourse = await findCourseByNameCaseInsensitive(parsed.value.courseName);
+          const fallbackCourse = await findCourseByNameCaseInsensitive(supabase, parsed.value.courseName);
           if (fallbackCourse.course) {
             courseRow = fallbackCourse.course;
           } else {
