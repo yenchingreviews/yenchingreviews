@@ -68,8 +68,8 @@ a {
 
 .nav-link-cta {
   border: 1px solid #d7a0a5;
-  border-radius: 999px;
-  padding: 0.34rem 0.8rem;
+  border-radius: 8px;
+  padding: 0.32rem 0.72rem;
   color: #7c1e28;
 }
 
@@ -279,10 +279,10 @@ a {
 .tag {
   font-size: 0.68rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.13rem 0.5rem;
+  border-radius: 7px;
+  padding: 0.16rem 0.46rem;
   color: var(--muted);
-  background: #ffffff;
+  background: #f2eee8;
 }
 
 .tag.category.is-yenching {
@@ -298,7 +298,7 @@ a {
 }
 
 .tag.language {
-  background: #ffffff;
+  background: #eee8de;
   color: #2f241c;
 }
 
@@ -334,8 +334,8 @@ a {
 
 .inline-cta-button {
   border: 1px solid #d7a0a5;
-  border-radius: 999px;
-  padding: 0.25rem 0.7rem;
+  border-radius: 8px;
+  padding: 0.27rem 0.64rem;
   font-size: 0.82rem;
   color: #7a1d27;
 }
@@ -380,7 +380,11 @@ a {
 }
 
 .form-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.3rem;
+}
+
+.form-section:last-of-type {
+  margin-bottom: 0.6rem;
 }
 
 .question-heading {
@@ -421,13 +425,18 @@ a {
 .professor-choice-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.42rem;
   align-items: center;
 }
 
+.professor-choice-row .chip {
+  min-height: 34px;
+}
+
 .secondary-chip {
-  margin-left: 0.35rem;
+  margin-left: auto;
   color: #6b5a4a;
+  background: #f3eee7;
 }
 
 .pill,
@@ -436,10 +445,10 @@ a {
 .modal-close,
 .submit-button {
   border: 1px solid #d8c7b4;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: 8px;
+  background: #f7f2eb;
   color: #4f4032;
-  padding: 0.34rem 0.74rem;
+  padding: 0.34rem 0.68rem;
   cursor: pointer;
 }
 
@@ -615,7 +624,7 @@ a {
 
 .term-year-pill {
   border: 1px solid #d8c7b4;
-  border-radius: 999px;
+  border-radius: 8px;
   color: #4f4032;
   background-color: #fff;
   appearance: none;
@@ -658,7 +667,7 @@ a {
 .success-check {
   width: 74px;
   height: 74px;
-  border-radius: 999px;
+  border-radius: 12px;
   background: #1f8e4f;
   color: #fff;
   font-size: 2rem;
@@ -707,11 +716,11 @@ a {
 
 .review-meta span {
   font-size: 0.73rem;
-  padding: 0.1rem 0.45rem;
+  padding: 0.12rem 0.42rem;
   border: 1px solid #dfd3c3;
-  border-radius: 999px;
+  border-radius: 7px;
   color: #62574c;
-  background: #f5ede2;
+  background: #f1ebe2;
 }
 
 .notice {
@@ -826,20 +835,20 @@ a {
 
 .clear-filters {
   border: 1px solid #d8c7b4;
-  background: #ffffff;
+  background: #f3eee7;
   color: #6f5b4b;
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 0.84rem;
-  font-weight: 650;
-  padding: 0.45rem 1.3rem;
-  min-width: 8.8rem;
+  font-weight: 620;
+  padding: 0.4rem 0.9rem;
+  min-width: 7.4rem;
   margin-left: auto;
   cursor: pointer;
   transition: all 140ms ease;
 }
 
 .clear-filters:hover {
-  background: #f8f8f8;
+  background: #efe8de;
   border-color: #cdae8b;
   transform: translateY(-1px);
 }
@@ -851,9 +860,9 @@ a {
 }
 
 .filter-tag {
-  font-size: 0.84rem;
-  font-weight: 620;
-  padding: 0.38rem 0.86rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.34rem 0.68rem;
   cursor: pointer;
   transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
 }
@@ -867,12 +876,13 @@ a {
 .filter-tag.active {
   transform: translateY(-1px);
   border-color: var(--brand-red);
-  box-shadow: 0 0 0 3px rgba(180, 35, 42, 0.8), 0 5px 14px rgba(56, 38, 24, 0.12);
+  box-shadow: 0 0 0 1px #e6b1b5;
 }
 
 .filter-tag {
-  background: #ffffff;
+  background: #f2eee8;
   color: #2f241c;
+  border-radius: 8px;
 }
 
 .filter-tag.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
@@ -885,17 +895,17 @@ a {
 .filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
 .filter-tag.all-tag {
-  background: #ffffff;
+  background: #f2eee8;
   color: #2f241c;
 }
 
 .filter-tag.track-all {
-  background: #ffffff;
+  background: #f2eee8;
   color: #2f241c;
 }
 
 .filter-tag.all-tag.all-active {
-  background: #ffffff;
+  background: #f2eee8;
   border-color: var(--brand-red);
   box-shadow: 0 0 0 1px #e6b1b5;
 }
@@ -966,8 +976,8 @@ a {
 
 .detail-header {
   border-bottom: 1px solid var(--line);
-  padding-bottom: 0.75rem;
-  margin-bottom: 1rem;
+  padding-bottom: 0.95rem;
+  margin: 0.65rem 0 1.2rem;
 }
 
 .catalog-search:focus {
@@ -975,4 +985,119 @@ a {
   border-color: #b37c82;
   box-shadow: 0 0 0 3px rgba(180, 35, 42, 0.12);
   background: #ffffff;
+}
+
+
+.track-dropdown-wrap {
+  position: relative;
+}
+
+.track-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #d8c7b4;
+  border-radius: 8px;
+  background: #f2eee8;
+  color: #2f241c;
+  padding: 0.44rem 0.62rem;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.track-dropdown-caret {
+  color: #746457;
+  font-size: 0.72rem;
+}
+
+.track-dropdown-trigger.open {
+  border-color: #b37c82;
+}
+
+.track-dropdown-menu {
+  margin-top: 0.35rem;
+  border: 1px solid #ddcfbf;
+  border-radius: 9px;
+  background: #f4f0ea;
+  box-shadow: 0 8px 20px rgba(40, 30, 20, 0.1);
+  overflow: hidden;
+}
+
+.track-option {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #e7dccf;
+  background: transparent;
+  color: #413529;
+  padding: 0.5rem 0.62rem;
+  font: inherit;
+  font-size: 0.83rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.track-option:last-child {
+  border-bottom: 0;
+}
+
+.track-option:hover {
+  background: #efe8de;
+}
+
+.track-option.active {
+  background: #eee5da;
+  color: #7b1f28;
+}
+
+.track-dot {
+  width: 0.52rem;
+  height: 0.52rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  flex: 0 0 auto;
+}
+
+.track-dot.track-neutral {
+  background: #9a8c7f;
+}
+
+.track-dot.track-econ { background: #5a6d8e; }
+.track-dot.track-general { background: #9ca3af; }
+.track-dot.track-history { background: #7a4a29; }
+.track-dot.track-law { background: #3f7a61; }
+.track-dot.track-literature { background: #df6ba1; }
+.track-dot.track-philosophy { background: #f4bf3a; }
+.track-dot.track-politics { background: #34537f; }
+.track-dot.track-default { background: #6f6258; }
+
+.course-item:first-child:hover {
+  transform: translateY(0);
+}
+
+.review-meta-line {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.reviews-heading {
+  margin: 0 0 0.85rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-name {
+  font-size: clamp(1.35rem, 2.1vw, 1.84rem);
+  margin-bottom: 0;
+}
+
+.detail-meta .tag {
+  font-size: 0.74rem;
+  padding: 0.2rem 0.56rem;
 }
