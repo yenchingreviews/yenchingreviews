@@ -166,7 +166,16 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
             aria-haspopup="listbox"
             aria-expanded={isTrackMenuOpen}
           >
-            <span className="track-trigger-label">{selectedTrack || 'Filter by track'}</span>
+            <span className="track-trigger-label">
+              {selectedTrack ? (
+                <span className="track-trigger-selected">
+                  <span className={`track-dot ${trackToken(selectedTrack)}`} aria-hidden="true" />
+                  <span>{selectedTrack}</span>
+                </span>
+              ) : (
+                'Filter by track'
+              )}
+            </span>
             <span className="track-trigger-actions">
               {selectedTrack && (
                 <span

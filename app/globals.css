@@ -179,7 +179,7 @@ a {
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 0.55rem;
+  gap: 0.56rem 0.62rem;
 }
 
 
@@ -297,6 +297,13 @@ a {
   color: #fff;
 }
 
+.filter-tag.category.is-yenching,
+.filter-tag.category.is-pku {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
 .tag.language {
   background: #eee8de;
   color: #2f241c;
@@ -330,15 +337,17 @@ a {
 
 .reviews-heading h3 {
   margin: 0;
+  font-weight: 500;
 }
 
 .inline-cta-button {
-  border: 1px solid #13100d;
+  border: 1px solid #d7a0a5;
   border-radius: 8px;
-  padding: 0.31rem 0.7rem;
-  font-size: 0.82rem;
-  color: #13100d;
-  background: #f2eee8;
+  padding: 0.3rem 0.72rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #7c1e28;
+  background: #f7eeef;
 }
 
 .modal-backdrop {
@@ -391,7 +400,7 @@ a {
 .question-heading {
   margin: 0 0 0.6rem;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 550;
   color: #2f261f;
 }
 
@@ -402,6 +411,16 @@ a {
   font-size: 0.83rem;
   font-weight: 600;
   color: #5f5042;
+}
+
+.new-course-section {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.new-course-section .field-title,
+.new-course-section label {
+  margin: 0;
 }
 
 .review-form input,
@@ -441,7 +460,7 @@ a {
 
 .secondary-chip {
   color: #6b5a4a;
-  background: #f3eee7;
+  background: transparent;
 }
 
 .pill,
@@ -449,10 +468,10 @@ a {
 .link-button,
 .modal-close,
 .submit-button {
-  border: 1px solid #d8c7b4;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f7f2eb;
-  color: #4f4032;
+  background: transparent;
+  color: #5f5042;
   padding: 0.34rem 0.68rem;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
@@ -463,14 +482,15 @@ a {
 .link-button:hover,
 .submit-button:hover,
 .modal-close:hover {
-  border-color: #bca790;
-  background: #f0e8dd;
+  border-color: #cfc4b8;
+  background: #f7f2ec;
 }
 
 .pill.active,
 .chip.active {
   border-color: var(--brand-red);
   color: #7f1e28;
+  background: #fcf1f2;
 }
 
 .link-button {
@@ -540,7 +560,7 @@ a {
 
 .add-new-course-option {
   color: #a61f2d;
-  font-weight: 650;
+  font-weight: 620;
 }
 
 .autocomplete-empty {
@@ -614,6 +634,7 @@ a {
   padding: 0.52rem 0.85rem;
   font: inherit;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
 }
 
@@ -661,10 +682,10 @@ a {
 }
 
 .term-year-pill {
-  border: 1px solid #d8c7b4;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #4f4032;
-  background-color: #f7f2eb;
+  color: #5f5042;
+  background-color: transparent;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -726,7 +747,9 @@ a {
   background: var(--brand-red);
   color: #fff;
   border-color: var(--brand-red);
-  padding: 0.5rem 0.95rem;
+  padding: 0.54rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .review-card p {
@@ -872,13 +895,13 @@ a {
 }
 
 .clear-filters {
-  border: 1px solid #12100d;
-  background: #f3eee7;
-  color: #15110d;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
   border-radius: 8px;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   font-weight: 620;
-  padding: 0.4rem 0.9rem;
+  padding: 0.46rem 0.94rem;
   min-width: 7.4rem;
   margin-left: auto;
   cursor: pointer;
@@ -886,8 +909,8 @@ a {
 }
 
 .clear-filters:hover {
-  background: #efe8de;
-  border-color: #12100d;
+  background: #f7f2ec;
+  border-color: #cfc4b8;
 }
 
 .clear-filters.is-active {
@@ -897,16 +920,17 @@ a {
 }
 
 .filter-tag {
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   font-weight: 580;
-  padding: 0.3rem 0.62rem;
+  padding: 0.42rem 0.78rem;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease;
 }
 
 .filter-tag:hover {
   box-shadow: none;
-  border-color: #c8b39d;
+  border-color: #cfc4b8;
+  background: #f7f2ec;
 }
 
 .filter-tag.active {
@@ -915,10 +939,10 @@ a {
 }
 
 .filter-tag {
-  background: #f2eee8;
-  color: #2f241c;
+  background: transparent;
+  color: var(--muted);
   border-radius: 7px;
-  border-color: #12100d;
+  border-color: var(--line);
 }
 
 .filter-tag.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
@@ -931,8 +955,8 @@ a {
 .filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
 .filter-tag.all-tag {
-  background: #f2eee8;
-  color: #2f241c;
+  background: transparent;
+  color: var(--muted);
 }
 
 .filter-tag.track-all {
@@ -941,7 +965,7 @@ a {
 }
 
 .filter-tag.all-tag.all-active {
-  background: #f2eee8;
+  background: #fcf1f2;
   border-color: var(--brand-red);
   box-shadow: none;
 }
@@ -1055,21 +1079,32 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #12100d;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f2eee8;
-  color: #2f241c;
-  padding: 0.44rem 0.62rem;
+  background: transparent;
+  color: var(--muted);
+  padding: 0.55rem 0.74rem;
   font: inherit;
-  font-size: 0.84rem;
+  font-size: 0.89rem;
   font-weight: 580;
   cursor: pointer;
+}
+
+.track-dropdown-trigger:hover {
+  border-color: #cfc4b8;
+  background: #f7f2ec;
 }
 
 .track-trigger-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.track-trigger-selected {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .track-trigger-actions {
@@ -1086,7 +1121,8 @@ a {
 
 .track-dropdown-caret {
   color: #746457;
-  font-size: 0.72rem;
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .track-dropdown-trigger.open {
@@ -1095,7 +1131,7 @@ a {
 
 .track-dropdown-menu {
   margin-top: 0.35rem;
-  border: 1px solid #ddcfbf;
+  border: 1px solid var(--line);
   border-radius: 9px;
   background: #f4f0ea;
   box-shadow: 0 8px 20px rgba(40, 30, 20, 0.1);
@@ -1108,14 +1144,23 @@ a {
   border-bottom: 1px solid #e7dccf;
   background: transparent;
   color: #413529;
-  padding: 0.5rem 0.62rem;
+  padding: 0.58rem 0.7rem;
   font: inherit;
-  font-size: 0.83rem;
+  font-size: 0.89rem;
   text-align: left;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+}
+
+.filter-group h3 {
+  margin: 0 0 0.56rem;
+  font-size: 0.95rem;
+}
+
+.filter-group {
+  margin-bottom: 1.2rem;
 }
 
 .track-option:last-child {

@@ -337,15 +337,11 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                         <p className="autocomplete-empty">No matching courses found.</p>
                       ) : null}
 
-                      {canCreateNewCourse ? (
+                      {hasTypedCourseSearch && canCreateNewCourse ? (
                         <button type="button" className="autocomplete-option add-new-course-option" onClick={switchToNewCourse}>
-                          Add new course
+                          Can&apos;t find it? Add a new course
                         </button>
-                      ) : (
-                        <button type="button" className="autocomplete-option add-new-course-option" onClick={switchToNewCourse}>
-                          Add new course
-                        </button>
-                      )}
+                      ) : null}
                     </div>
                   )}
                 </div>
@@ -375,7 +371,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           )}
 
           {state.submissionMode === 'new' && (
-            <section className="form-section">
+            <section className="form-section new-course-section">
               <label htmlFor="new-course-name">Course name</label>
               <input id="new-course-name" value={state.newCourseName} onChange={(event) => setForm('newCourseName', event.target.value)} />
 

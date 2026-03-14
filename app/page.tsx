@@ -35,13 +35,19 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     selectedCourseId: searchParams.selected_course_id ?? '',
   };
 
-  const [filters, results] = await Promise.all([
+  const [filters, results, allCourseResults] = await Promise.all([
     getCourseFilterOptions(),
     getCourses({
       search: selected.search,
       categoryTypes: selected.categoryTypes,
       trackNames: selected.trackNames,
       languages: selected.languages,
+    }),
+    getCourses({
+      search: '',
+      categoryTypes: [],
+      trackNames: [],
+      languages: [],
     }),
   ]);
 
@@ -56,11 +62,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       };
 
   const globalParams = new URLSearchParams();
-  if (selected.search) globalParams.set('search', selected.search);
-  if (selected.categoryTypes.length > 0) globalParams.set('category_type', selected.categoryTypes.join(','));
-  if (selected.trackNames.length > 0) globalParams.set('track_name', selected.trackNames.join(','));
-  if (selected.languages.length > 0) globalParams.set('language', selected.languages.join(','));
-  if (selected.selectedCourseId) globalParams.set('selected_course_id', selected.selectedCourseId);
   globalParams.set('review_mode', 'global');
 
   const selectedParams = new URLSearchParams(globalParams.toString());
@@ -88,7 +89,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </div>
         </div>
 
-        <ReviewSubmissionModal mode={reviewMode} courses={results.courses} selectedCourse={selectedCourse} trackOptions={filters.tracks} />
+        <ReviewSubmissionModal
+          mode={reviewMode}
+          courses={reviewMode === 'global' ? allCourseResults.courses : results.courses}
+          selectedCourse={selectedCourse}
+          trackOptions={filters.tracks}
+        />
       </main>
     </>
   );
