@@ -55,8 +55,10 @@ export function CourseDetail({ course, reviews, writeReviewHref }: CourseDetailP
           {reviews.map((review) => (
             <li key={review.review_id} className="review-card">
               <div className="review-topline">
-                <span className="review-term">{renderTerm(review)}</span>
-                {review.professor_name && <span className="review-prof">Prof. {review.professor_name}</span>}
+                <span className="review-meta-line">
+                  {renderTerm(review)}
+                  {review.professor_name ? ` | Taught by Prof. ${review.professor_name}` : ''}
+                </span>
               </div>
               {review.review_text && <p>{review.review_text}</p>}
 

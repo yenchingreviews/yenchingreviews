@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import { trackToken } from '@/app/components/track-token';
 
 type CourseFiltersProps = {
@@ -32,6 +32,9 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [isTrackMenuOpen, setIsTrackMenuOpen] = useState(false);
+
+  const selectedTrackSet = useMemo(() => new Set(selected.trackNames), [selected.trackNames]);
 
   function pushParamList(name: string, values: string[]) {
     const params = new URLSearchParams(searchParams.toString());
@@ -136,24 +139,42 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
 
       <div className="filter-group">
         <h3>Track</h3>
-        <div className="filter-row">
+        <div className="track-dropdown-wrap">
           <button
             type="button"
-            className={`tag filter-tag all-tag track-all ${selected.trackNames.length === 0 ? 'active all-active' : ''}`}
-            onClick={() => resetGroup('track_name')}
+            className={`track-dropdown-trigger ${isTrackMenuOpen ? 'open' : ''}`}
+            onClick={() => setIsTrackMenuOpen((open) => !open)}
+            aria-haspopup="listbox"
+            aria-expanded={isTrackMenuOpen}
           >
-            All
+            <span>{selected.trackNames.length > 0 ? `Filter by track (${selected.trackNames.length})` : 'Filter by track'}</span>
+            <span aria-hidden="true" className="track-dropdown-caret">▾</span>
           </button>
-          {options.tracks.map((track) => (
-            <FilterBubble
-              key={track}
-              label={track}
-              value={track}
-              selectedValues={selected.trackNames}
-              onPick={(value) => toggleFilter('track_name', value)}
-              className={trackToken(track)}
-            />
-          ))}
+
+          {isTrackMenuOpen && (
+            <div className="track-dropdown-menu" role="listbox" aria-label="Filter by track">
+              <button
+                type="button"
+                className={`track-option ${selected.trackNames.length === 0 ? 'active' : ''}`}
+                onClick={() => resetGroup('track_name')}
+              >
+                <span className="track-dot track-neutral" aria-hidden="true" />
+                <span>All tracks</span>
+              </button>
+
+              {options.tracks.map((track) => (
+                <button
+                  key={track}
+                  type="button"
+                  className={`track-option ${selectedTrackSet.has(track) ? 'active' : ''}`}
+                  onClick={() => toggleFilter('track_name', track)}
+                >
+                  <span className={`track-dot ${trackToken(track)}`} aria-hidden="true" />
+                  <span>{track}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
