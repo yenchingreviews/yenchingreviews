@@ -14,12 +14,12 @@ const COURSE_SELECT_COLUMNS =
   'course_id, course_name, category_type, track_name, language, latest_name_source_term, name_variants, source_terms_present, notes';
 
 const REVIEW_SELECT_COLUMNS =
-  'review_id, course_id, course_name, category_type, track_name, term_label, term_year, term_season, professor_name, review_order_in_term_left_to_right, review_text, reviewer_display_name, is_anonymous, legacy_review, rating_quality, rating_workload, used_for_track_credit, used_for_track, source_sheet, source_row, source_review_column_index';
+  'review_id, course_id, course_name, category_type, track_name, term_label, term_year, term_season, professor_name, review_order_in_term_left_to_right, review_text, reviewer_display_name, is_anonymous, legacy_review, rating_quality, rating_workload, used_for_track_credit, used_for_track, source_sheet, source_row, source_review_column_index, created_at';
 
 const TERM_SEASON_RANK: Record<string, number> = {
-  spring: 4,
+  fall: 4,
   summer: 3,
-  fall: 2,
+  spring: 2,
   winter: 1,
 };
 
@@ -48,6 +48,11 @@ function sortReviewsByChronology(reviews: Review[]) {
 
     const seasonDiff = seasonRank(b.term_season) - seasonRank(a.term_season);
     if (seasonDiff !== 0) return seasonDiff;
+
+    const createdAtDiff =
+      (Date.parse(b.created_at ?? '') || Number.MIN_SAFE_INTEGER) -
+      (Date.parse(a.created_at ?? '') || Number.MIN_SAFE_INTEGER);
+    if (createdAtDiff !== 0) return createdAtDiff;
 
     const orderDiff =
       (b.review_order_in_term_left_to_right ?? Number.MIN_SAFE_INTEGER) -
