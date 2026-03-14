@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
+import { trackToken } from '@/app/components/track-token';
 import type { Course } from '@/types/course';
 
 type ReviewSubmissionModalProps = {
@@ -53,14 +54,21 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const [professorOptions, setProfessorOptions] = useState<string[]>([]);
   const [isLoadingProfessors, setIsLoadingProfessors] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isCourseDropdownOpen, setIsCourseDropdownOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const sortedCourses = useMemo(
+    () => [...courses].sort((a, b) => a.course_name.localeCompare(b.course_name)),
+    [courses],
+  );
 
   const normalizedSearch = state.searchText.trim().toLowerCase();
   const matchingCourses = useMemo(
     () =>
       normalizedSearch
-        ? courses.filter((course) => course.course_name.toLowerCase().includes(normalizedSearch)).slice(0, 8)
-        : courses.slice(0, 8),
-    [courses, normalizedSearch],
+        ? sortedCourses.filter((course) => course.course_name.toLowerCase().includes(normalizedSearch)).slice(0, 8)
+        : sortedCourses.slice(0, 5),
+    [sortedCourses, normalizedSearch],
   );
 
   const existingCourseNameSet = useMemo(
@@ -80,6 +88,8 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     if (!isOpen) return;
     setState(buildInitialState(mode, selectedCourse));
     setFeedback(null);
+    setIsCourseDropdownOpen(false);
+    setIsSubmitted(false);
   }, [isOpen, mode, selectedCourse]);
 
   useEffect(() => {
@@ -147,6 +157,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       professorName: '',
       selectedProfessor: '',
     }));
+    setIsCourseDropdownOpen(false);
   }
 
   function switchToNewCourse() {
@@ -164,6 +175,34 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       selectedProfessor: '',
       professorName: '',
     }));
+    setIsCourseDropdownOpen(false);
+  }
+
+  function clearSelectedCourse() {
+    setState((current) => ({
+      ...current,
+      submissionMode: 'existing',
+      selectedCourseId: '',
+      searchText: '',
+      newCourseName: '',
+      professorMode: 'existing',
+      selectedProfessor: '',
+      professorName: '',
+    }));
+    setIsCourseDropdownOpen(true);
+  }
+
+  function addNewProfessor() {
+    const trimmedProfessor = state.professorName.trim();
+    if (!trimmedProfessor) return;
+
+    setProfessorOptions((current) => (current.includes(trimmedProfessor) ? current : [...current, trimmedProfessor]));
+    setState((current) => ({
+      ...current,
+      professorMode: 'existing',
+      selectedProfessor: trimmedProfessor,
+      professorName: '',
+    }));
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -171,6 +210,11 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     setFeedback(null);
 
     const professorName = state.professorMode === 'existing' ? state.selectedProfessor : state.professorName;
+
+    if (state.reviewText.trim().length < 10) {
+      setFeedback({ type: 'error', message: 'Please write at least 10 characters for your response.' });
+      return;
+    }
 
     const payload =
       state.submissionMode === 'existing'
@@ -212,16 +256,10 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       return;
     }
 
-    setFeedback({ type: 'success', message: 'Review published. Thank you for helping future students.' });
-
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('review_mode');
-    if (result.courseId) {
-      params.set('selected_course_id', result.courseId);
-    }
+    setFeedback(null);
+    setIsSubmitted(true);
 
     startTransition(() => {
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
       router.refresh();
     });
   }
@@ -234,47 +272,75 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           <button type="button" className="modal-close" onClick={closeModal}>✕</button>
         </div>
 
+        {isSubmitted ? (
+          <div className="review-success-state">
+            <div className="success-check" aria-hidden="true">✓</div>
+            <p className="success-title">Thanks for your submission. You&apos;re helping future students.</p>
+          </div>
+        ) : (
         <form className="review-form" onSubmit={handleSubmit}>
           {mode === 'global' && (
             <section className="form-section">
-              <label htmlFor="course-search">Search course name...</label>
-              <input
-                id="course-search"
-                value={state.searchText}
-                onChange={(event) => setForm('searchText', event.target.value)}
-                placeholder="Search course name..."
-              />
+              <p className="question-heading">1. Which course would you like to review?</p>
+              <div className="autocomplete-wrap">
+                <input
+                  id="course-search"
+                  value={state.searchText}
+                  onChange={(event) => {
+                    setForm('searchText', event.target.value);
+                    if (state.submissionMode === 'new') {
+                      setForm('submissionMode', 'existing');
+                      setForm('newCourseName', '');
+                    }
+                    setForm('selectedCourseId', '');
+                    setIsCourseDropdownOpen(true);
+                  }}
+                  onFocus={() => setIsCourseDropdownOpen(true)}
+                  placeholder="Search course name..."
+                  autoComplete="off"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={isCourseDropdownOpen}
+                  aria-controls="course-search-options"
+                />
+                {state.selectedCourseId && (
+                  <button type="button" className="input-clear" aria-label="Clear selected course" onClick={clearSelectedCourse}>✕</button>
+                )}
 
-              {state.submissionMode === 'existing' ? (
-                <p className="form-hint">Selected course: {effectiveCourse?.course_name}</p>
-              ) : (
-                <p className="form-hint">No matching course selected yet.</p>
-              )}
-
-              {matchingCourses.length > 0 && (
-                <div className="suggestion-row">
-                  {matchingCourses.map((course) => (
-                    <button type="button" key={course.course_id} className="chip" onClick={() => switchToExisting(course)}>
-                      {course.course_name}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {canCreateNewCourse && (
-                <button type="button" className="link-button" onClick={switchToNewCourse}>
-                  Create new course
-                </button>
-              )}
+                {isCourseDropdownOpen && (
+                  <div id="course-search-options" className="autocomplete-dropdown" role="listbox">
+                    {matchingCourses.length > 0 ? (
+                      matchingCourses.map((course) => (
+                        <button type="button" key={course.course_id} className="autocomplete-option" onClick={() => switchToExisting(course)}>
+                          {course.course_name}
+                        </button>
+                      ))
+                    ) : canCreateNewCourse ? (
+                      <button type="button" className="autocomplete-option no-match" onClick={switchToNewCourse}>
+                        No matching courses found — Add a new course
+                      </button>
+                    ) : (
+                      <p className="autocomplete-empty">No courses available.</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </section>
           )}
 
           {(mode === 'selected' || state.submissionMode === 'existing') && effectiveCourse && (
             <section className="form-section">
-              <div className="readonly-grid">
-                <p><strong>Course:</strong> {effectiveCourse.course_name}</p>
-                <p><strong>Category:</strong> {effectiveCourse.category_type ?? '—'}</p>
-                <p><strong>Track:</strong> {effectiveCourse.track_name ?? '—'}</p>
+              {mode === 'selected' ? <p className="question-heading">1. Which course would you like to review?</p> : null}
+              <div className="selected-course-card">
+                <p className="selected-course-name">{effectiveCourse.course_name}</p>
+                <div className="selected-course-tags">
+                  {effectiveCourse.category_type && (
+                    <span className={`tag category ${effectiveCourse.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
+                      {effectiveCourse.category_type}
+                    </span>
+                  )}
+                  {effectiveCourse.track_name && <span className={`tag ${trackToken(effectiveCourse.track_name)}`}>{effectiveCourse.track_name}</span>}
+                </div>
               </div>
             </section>
           )}
@@ -333,11 +399,11 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           )}
 
           <section className="form-section">
-            <p className="field-title">Select a professor</p>
+            <p className="question-heading">2. Which professor taught this course?</p>
             {state.submissionMode === 'existing' && isLoadingProfessors ? <p className="form-hint">Loading professors…</p> : null}
 
             {state.submissionMode === 'existing' && professorOptions.length > 0 && (
-              <div className="suggestion-row">
+              <div className="professor-choice-row">
                 {professorOptions.map((professor) => (
                   <button
                     type="button"
@@ -351,30 +417,35 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                     {professor}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  className={`chip secondary-chip ${state.professorMode === 'new' ? 'active' : ''}`}
+                  onClick={() => setForm('professorMode', 'new')}
+                >
+                  Add new professor
+                </button>
               </div>
             )}
 
-            <button type="button" className="link-button" onClick={() => setForm('professorMode', 'new')}>Add new professor</button>
-
-            {state.professorMode === 'new' || professorOptions.length === 0 ? (
-              <input value={state.professorName} onChange={(event) => setForm('professorName', event.target.value)} placeholder="Professor name" />
-            ) : null}
+            {(state.professorMode === 'new' || professorOptions.length === 0) && (
+              <div className="inline-input-action fused">
+                <input value={state.professorName} onChange={(event) => setForm('professorName', event.target.value)} placeholder="Professor name" />
+                <button type="button" className="danger-button" onClick={addNewProfessor} disabled={!state.professorName.trim()}>
+                  Submit
+                </button>
+              </div>
+            )}
           </section>
 
-          <section className="form-section split">
-            <div>
-              <p className="field-title">Term season</p>
-              <div className="pill-row">
-                {['Fall', 'Spring'].map((season) => (
-                  <button key={season} type="button" className={`pill ${state.termSeason === season ? 'active' : ''}`} onClick={() => setForm('termSeason', season as FormState['termSeason'])}>
-                    {season}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label htmlFor="term-year">Term year</label>
-              <select id="term-year" value={state.termYear} onChange={(event) => setForm('termYear', event.target.value)}>
+          <section className="form-section">
+            <p className="question-heading">3. When did you take this course?</p>
+            <div className="term-control-row">
+              {['Fall', 'Spring'].map((season) => (
+                <button key={season} type="button" className={`pill ${state.termSeason === season ? 'active' : ''}`} onClick={() => setForm('termSeason', season as FormState['termSeason'])}>
+                  {season}
+                </button>
+              ))}
+              <select id="term-year" className="term-year-pill" value={state.termYear} onChange={(event) => setForm('termYear', event.target.value)}>
                 {YEAR_OPTIONS.map((year) => (
                   <option key={year} value={String(year)}>{year}</option>
                 ))}
@@ -383,7 +454,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           </section>
 
           <section className="form-section">
-            <p className="field-title">Quality rating (1–5)</p>
+            <p className="question-heading">4. How would you rate the quality of this course?</p>
             <div className="pill-row quality-row">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button key={value} type="button" className={`pill ${state.ratingQuality === value ? 'active' : ''}`} onClick={() => setForm('ratingQuality', value)}>
@@ -391,8 +462,10 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                 </button>
               ))}
             </div>
+          </section>
 
-            <p className="field-title">Workload rating</p>
+          <section className="form-section">
+            <p className="question-heading">5. How would you describe the workload?</p>
             <div className="pill-row">
               {['Light', 'Moderate', 'Heavy'].map((value) => (
                 <button key={value} type="button" className={`pill ${state.ratingWorkload === value ? 'active' : ''}`} onClick={() => setForm('ratingWorkload', value as FormState['ratingWorkload'])}>
@@ -403,13 +476,15 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           </section>
 
           <section className="form-section">
-            <label htmlFor="review-text">Comment</label>
+            <p className="question-heading">6. What should future students know about this course?</p>
             <textarea
               id="review-text"
               value={state.reviewText}
               onChange={(event) => setForm('reviewText', event.target.value)}
-              placeholder="Share your experience in the course. What should future students know?"
+              placeholder="Share your experience in the course..."
               rows={5}
+              required
+              minLength={10}
             />
           </section>
 
@@ -419,6 +494,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
             <button type="submit" className="submit-button" disabled={isPending}>Publish Review</button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );
