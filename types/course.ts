@@ -36,4 +36,5 @@ export type Review = {
   source_sheet: string | null;
   source_row: number | null;
   source_review_column_index: number | null;
+  created_at?: string | null;
 };
