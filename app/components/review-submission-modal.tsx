@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { formatCategoryLabel, isYenchingCategory } from '@/app/components/category-label';
 import { trackToken } from '@/app/components/track-token';
 import type { Course } from '@/types/course';
@@ -35,14 +35,6 @@ type FormState = {
   reviewText: string;
 };
 
-const QUALITY_LABELS: Record<number, string> = {
-  1: 'Do Not Take',
-  2: 'Poor',
-  3: 'Average',
-  4: 'Good',
-  5: 'Amazing',
-};
-
 const currentYear = new Date().getFullYear();
 const YEAR_OPTIONS = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3, currentYear - 4];
 
@@ -62,10 +54,12 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const [isYearMenuOpen, setIsYearMenuOpen] = useState(false);
   const [isNewTrackMenuOpen, setIsNewTrackMenuOpen] = useState(false);
   const [isUsedTrackMenuOpen, setIsUsedTrackMenuOpen] = useState(false);
+  const [isProfessorMenuOpen, setIsProfessorMenuOpen] = useState(false);
   const [professorCache, setProfessorCache] = useState<Record<string, string[]>>({});
   const yearDropdownRef = useRef<HTMLDivElement | null>(null);
   const newTrackDropdownRef = useRef<HTMLDivElement | null>(null);
   const usedTrackDropdownRef = useRef<HTMLDivElement | null>(null);
+  const professorDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const sortedCourses = useMemo(
     () => [...courses].sort((a, b) => a.course_name.localeCompare(b.course_name)),
@@ -102,9 +96,27 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     setState(buildInitialState(mode, selectedCourse));
     setFeedback(null);
     setIsCourseDropdownOpen(false);
+    setIsProfessorMenuOpen(false);
     setIsSubmitted(false);
     setDidAttemptSubmit(false);
   }, [isOpen, mode, selectedCourse]);
+
+  const normalizeProfessorOptions = useCallback((options: string[]) => {
+    return options
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .filter((name, index, all) => all.indexOf(name) === index);
+  }, []);
+
+  const applyProfessorOptions = useCallback((options: string[]) => {
+    const normalizedOptions = normalizeProfessorOptions(options);
+    setProfessorOptions(normalizedOptions);
+    setState((current) => {
+      if (current.professorMode === 'new') return current;
+      if (current.selectedProfessor && normalizedOptions.includes(current.selectedProfessor)) return current;
+      return { ...current, selectedProfessor: normalizedOptions[0] ?? '' };
+    });
+  }, [normalizeProfessorOptions]);
 
   useEffect(() => {
     if (!isOpen || state.submissionMode !== 'existing' || !state.selectedCourseId) {
@@ -115,7 +127,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
     const cachedProfessors = professorCache[state.selectedCourseId];
     if (cachedProfessors) {
-      setProfessorOptions(cachedProfessors);
+      applyProfessorOptions(cachedProfessors);
       setIsLoadingProfessors(false);
       return;
     }
@@ -132,7 +144,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           return;
         }
         const nextProfessors = payload.professors ?? [];
-        setProfessorOptions(nextProfessors);
+        applyProfessorOptions(nextProfessors);
         setProfessorCache((current) => ({ ...current, [state.selectedCourseId]: nextProfessors }));
       })
       .catch(() => {
@@ -147,7 +159,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     return () => {
       active = false;
     };
-  }, [isOpen, professorCache, state.selectedCourseId, state.submissionMode]);
+  }, [applyProfessorOptions, isOpen, professorCache, state.selectedCourseId, state.submissionMode]);
 
   function prefetchProfessors(courseId: string) {
     if (!courseId || professorCache[courseId]) return;
@@ -177,14 +189,17 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       if (!usedTrackDropdownRef.current?.contains(event.target as Node)) {
         setIsUsedTrackMenuOpen(false);
       }
+      if (!professorDropdownRef.current?.contains(event.target as Node)) {
+        setIsProfessorMenuOpen(false);
+      }
     }
 
-    if (isYearMenuOpen || isNewTrackMenuOpen || isUsedTrackMenuOpen) {
+    if (isYearMenuOpen || isNewTrackMenuOpen || isUsedTrackMenuOpen || isProfessorMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isYearMenuOpen, isNewTrackMenuOpen, isUsedTrackMenuOpen]);
+  }, [isYearMenuOpen, isNewTrackMenuOpen, isUsedTrackMenuOpen, isProfessorMenuOpen]);
 
   if (!isOpen) return null;
 
@@ -218,11 +233,12 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       usedForTrack: '',
       professorMode: 'existing',
       professorName: '',
-      selectedProfessor: '',
+      selectedProfessor: cachedProfessors?.[0] ?? '',
     }));
-    setProfessorOptions(cachedProfessors ?? []);
+    applyProfessorOptions(cachedProfessors ?? []);
     setIsLoadingProfessors(!cachedProfessors);
     setIsCourseDropdownOpen(false);
+    setIsProfessorMenuOpen(false);
   }
 
   function switchToNewCourse() {
@@ -242,6 +258,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       professorName: '',
     }));
     setIsCourseDropdownOpen(false);
+    setIsProfessorMenuOpen(false);
   }
 
   function returnToCourseSearch() {
@@ -281,13 +298,14 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     const trimmedProfessor = state.professorName.trim();
     if (!trimmedProfessor) return;
 
-    setProfessorOptions((current) => (current.includes(trimmedProfessor) ? current : [...current, trimmedProfessor]));
+    setProfessorOptions((current) => [trimmedProfessor, ...current.filter((name) => name !== trimmedProfessor)]);
     setState((current) => ({
       ...current,
       professorMode: 'existing',
       selectedProfessor: trimmedProfessor,
       professorName: '',
     }));
+    setIsProfessorMenuOpen(false);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -621,51 +639,70 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
               </div>
             )}
 
-            {state.submissionMode === 'existing' && professorOptions.length > 0 && !isLoadingProfessors && (
-              <div className="professor-choice-row">
-                {professorOptions.map((professor) => (
-                  <button
-                    type="button"
-                    key={professor}
-                    className={`chip ${state.professorMode === 'existing' && state.selectedProfessor === professor ? 'active' : ''}`}
-                    onClick={() => {
-                      setForm('professorMode', 'existing');
-                      setForm('selectedProfessor', professor);
-                    }}
-                  >
-                    {professor}
-                  </button>
-                ))}
-                {state.professorMode === 'new' ? (
-                  <div className="chip professor-inline-editor">
-                    <input
-                      value={state.professorName}
-                      onChange={(event) => setForm('professorName', event.target.value)}
-                      placeholder="Professor name"
-                      autoFocus
-                    />
-                    <button type="button" className="professor-inline-submit" onClick={addNewProfessor} disabled={!state.professorName.trim()}>
-                      Add
+            {state.professorMode === 'existing' && !isLoadingProfessors && (
+              <div className="track-dropdown-wrap professor-dropdown" ref={professorDropdownRef}>
+                <button
+                  id="professor-select"
+                  type="button"
+                  className={`filter-control track-dropdown-trigger ${isProfessorMenuOpen ? 'open' : ''}`}
+                  onClick={() => setIsProfessorMenuOpen((open) => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isProfessorMenuOpen}
+                >
+                  <span className="track-trigger-label">{state.selectedProfessor || 'Select professor'}</span>
+                  <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+                </button>
+
+                {isProfessorMenuOpen && (
+                  <div className="track-dropdown-menu" role="listbox" aria-label="Select professor">
+                    {professorOptions.map((professor) => {
+                      const active = state.selectedProfessor === professor;
+                      return (
+                        <button
+                          key={professor}
+                          type="button"
+                          className={`filter-control track-option ${active ? 'active' : ''}`}
+                          onClick={() => {
+                            setForm('professorMode', 'existing');
+                            setForm('selectedProfessor', professor);
+                            setIsProfessorMenuOpen(false);
+                          }}
+                        >
+                          <span>{professor}</span>
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      className="filter-control track-option add-new-course-option"
+                      onClick={() => {
+                        setForm('professorMode', 'new');
+                        setIsProfessorMenuOpen(false);
+                      }}
+                    >
+                      + Add professor
                     </button>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="chip add-action-chip"
-                    onClick={() => setForm('professorMode', 'new')}
-                  >
-                    Add new professor
-                  </button>
                 )}
               </div>
             )}
 
             {(state.professorMode === 'new' || (professorOptions.length === 0 && !isLoadingProfessors)) && (
-              <div className="inline-input-action fused">
-                <input value={state.professorName} onChange={(event) => setForm('professorName', event.target.value)} placeholder="Professor name" />
-                <button type="button" className="danger-button" onClick={addNewProfessor} disabled={!state.professorName.trim()}>
-                  Submit
-                </button>
+              <div className="inline-input-action professor-input">
+                <input
+                  value={state.professorName}
+                  onChange={(event) => setForm('professorName', event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      addNewProfessor();
+                    }
+                  }}
+                  placeholder="Professor name"
+                  autoFocus
+                />
+                <p className="form-hint">Press Enter to confirm the professor.</p>
               </div>
             )}
           </section>
@@ -675,7 +712,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
             <div className="term-control-stack">
               <div className="term-control-group">
                 <p className="question-subheading">Term</p>
-                <div className="pill-row centered-answer-row term-season-row">
+                <div className="pill-row term-season-row">
                   {['Fall', 'Spring'].map((season) => (
                     <button key={season} type="button" className={`pill ${state.termSeason === season ? 'active' : ''}`} onClick={() => setForm('termSeason', season as FormState['termSeason'])}>
                       {season}
@@ -727,18 +764,20 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
           <section className="form-section">
             <p className="question-heading">4. How would you rate the quality of this course?</p>
-            <div className="pill-row quality-row centered-answer-row">
+            <div className="quality-scale" role="radiogroup" aria-label="Course quality rating">
+              <span className="quality-anchor">Horrible</span>
               {[1, 2, 3, 4, 5].map((value) => (
-                <button key={value} type="button" className={`pill ${state.ratingQuality === value ? 'active' : ''}`} onClick={() => setForm('ratingQuality', value)}>
-                  {value} · {QUALITY_LABELS[value]}
+                <button key={value} type="button" className={`pill quality-pill ${state.ratingQuality === value ? 'active' : ''}`} onClick={() => setForm('ratingQuality', value)}>
+                  {value}
                 </button>
               ))}
+              <span className="quality-anchor">Amazing</span>
             </div>
           </section>
 
           <section className="form-section">
             <p className="question-heading">5. How would you describe the workload?</p>
-            <div className="pill-row centered-answer-row">
+            <div className="pill-row workload-row">
               {['Light', 'Moderate', 'Heavy'].map((value) => (
                 <button key={value} type="button" className={`pill ${state.ratingWorkload === value ? 'active' : ''}`} onClick={() => setForm('ratingWorkload', value as FormState['ratingWorkload'])}>
                   {value}
@@ -757,7 +796,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                 if (didAttemptSubmit) setDidAttemptSubmit(false);
               }}
               placeholder="Share your experience…"
-              rows={5}
+              rows={8}
               required
               minLength={10}
               aria-invalid={didAttemptSubmit && reviewIsTooShort}
