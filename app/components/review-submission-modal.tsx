@@ -27,7 +27,7 @@ type FormState = {
   professorMode: 'existing' | 'new';
   professorName: string;
   selectedProfessor: string;
-  termSeason: 'Fall' | 'Spring';
+  termSeason: 'Fall' | 'Spring' | null;
   termYear: string;
   ratingQuality: number | null;
   ratingWorkload: 'Light' | 'Moderate' | 'Heavy' | null;
@@ -232,6 +232,11 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
     if (state.ratingWorkload === null) {
       setFeedback({ type: 'error', message: 'Please select a workload rating.' });
+      return;
+    }
+
+    if (state.termSeason === null) {
+      setFeedback({ type: 'error', message: 'Please select whether you took the course in Fall or Spring.' });
       return;
     }
 
@@ -570,7 +575,7 @@ function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: C
       professorMode: 'existing',
       professorName: '',
       selectedProfessor: '',
-      termSeason: 'Fall',
+      termSeason: null,
       termYear: defaultYear,
       ratingQuality: null,
       ratingWorkload: null,
@@ -591,7 +596,7 @@ function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: C
     professorMode: 'existing',
     professorName: '',
     selectedProfessor: '',
-    termSeason: 'Fall',
+    termSeason: null,
     termYear: defaultYear,
     ratingQuality: null,
     ratingWorkload: null,
