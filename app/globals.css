@@ -505,8 +505,9 @@ a {
 .link-button:hover,
 .submit-button:hover,
 .modal-close:hover {
-  border-color: #b59f89;
-  background: #f6efe6;
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
 }
 
 .pill.active,
@@ -768,9 +769,6 @@ a {
 }
 
 .submit-button {
-  background: var(--brand-red);
-  color: #fff;
-  border-color: var(--brand-red);
   padding: 0.54rem 1rem;
   font-size: 1rem;
   font-weight: 600;
@@ -926,6 +924,11 @@ a {
   font-weight: 550;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.action-control {
+  border-color: #d7a0a5;
+  color: #7c1e28;
 }
 
 .filter-control:hover {

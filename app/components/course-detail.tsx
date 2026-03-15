@@ -43,7 +43,7 @@ export function CourseDetail({ course, reviews, writeReviewHref, isWriteReviewAc
       <div className="reviews-heading">
         <h3>Reviews</h3>
         {writeReviewHref && (
-          <Link href={writeReviewHref} className={`inline-cta-button filter-control ${isWriteReviewActive ? 'active' : ''}`} scroll={false}>
+          <Link href={writeReviewHref} className={`inline-cta-button filter-control action-control ${isWriteReviewActive ? 'active' : ''}`} scroll={false}>
             Write a Review
           </Link>
         )}
