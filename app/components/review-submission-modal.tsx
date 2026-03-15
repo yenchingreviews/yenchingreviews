@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { trackToken } from '@/app/components/track-token';
 import type { Course } from '@/types/course';
 
@@ -58,6 +58,8 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const [isCourseDropdownOpen, setIsCourseDropdownOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false);
+  const [isYearMenuOpen, setIsYearMenuOpen] = useState(false);
+  const yearDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const sortedCourses = useMemo(
     () => [...courses].sort((a, b) => a.course_name.localeCompare(b.course_name)),
@@ -129,6 +131,20 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       active = false;
     };
   }, [isOpen, state.selectedCourseId, state.submissionMode]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (!yearDropdownRef.current?.contains(event.target as Node)) {
+        setIsYearMenuOpen(false);
+      }
+    }
+
+    if (isYearMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isYearMenuOpen]);
 
   if (!isOpen) return null;
 
@@ -498,11 +514,41 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                   {season}
                 </button>
               ))}
-              <select id="term-year" className="term-year-pill" value={state.termYear} onChange={(event) => setForm('termYear', event.target.value)}>
-                {YEAR_OPTIONS.map((year) => (
-                  <option key={year} value={String(year)}>{year}</option>
-                ))}
-              </select>
+              <div className="term-year-dropdown" ref={yearDropdownRef}>
+                <button
+                  id="term-year"
+                  type="button"
+                  className={`filter-control term-year-pill ${isYearMenuOpen ? 'open' : ''}`}
+                  onClick={() => setIsYearMenuOpen((open) => !open)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isYearMenuOpen}
+                >
+                  <span>{state.termYear}</span>
+                  <span aria-hidden="true" className="term-year-caret">▾</span>
+                </button>
+
+                {isYearMenuOpen && (
+                  <div className="term-year-menu" role="listbox" aria-label="Select term year">
+                    {YEAR_OPTIONS.map((year) => {
+                      const value = String(year);
+                      const active = state.termYear === value;
+                      return (
+                        <button
+                          key={year}
+                          type="button"
+                          className={`filter-control term-year-option ${active ? 'active' : ''}`}
+                          onClick={() => {
+                            setForm('termYear', value);
+                            setIsYearMenuOpen(false);
+                          }}
+                        >
+                          {value}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 

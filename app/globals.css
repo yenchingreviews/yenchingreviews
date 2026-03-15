@@ -700,43 +700,63 @@ a {
   margin-inline: auto;
 }
 
-.term-control-row .pill,
-.term-year-pill {
+.term-control-row .pill {
   min-width: 0;
   text-align: center;
   height: 36px;
   padding: 0.34rem 0.74rem;
 }
 
-.term-year-pill {
-  border: 1px solid var(--control-line);
-  border-radius: 8px;
-  color: #6b5a4a;
-  font-size: 0.9rem;
-  font-weight: 550;
-  background-color: transparent;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #65564a 50%),
-    linear-gradient(135deg, #65564a 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) 16px,
-    calc(100% - 11px) 16px;
-  background-size: 7px 7px, 7px 7px;
-  background-repeat: no-repeat;
-  padding-right: 1.8rem;
-  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+.term-year-dropdown {
+  position: relative;
 }
 
-.term-year-pill:hover {
+.term-year-pill {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0.34rem 0.74rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.term-year-pill.open {
   border-color: var(--brand-red);
-  background: var(--brand-red);
-  color: #fff;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #ffffff 50%),
-    linear-gradient(135deg, #ffffff 50%, transparent 50%);
+}
+
+.term-year-caret {
+  color: currentColor;
+  font-size: 1.05rem;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.term-year-menu {
+  position: absolute;
+  width: 100%;
+  top: calc(100% + 0.35rem);
+  border: 1px solid var(--control-line);
+  border-radius: 9px;
+  background: #f4f0ea;
+  box-shadow: 0 8px 20px rgba(40, 30, 20, 0.1);
+  overflow: hidden;
+  z-index: 6;
+}
+
+.term-year-option {
+  width: 100%;
+  border-radius: 0;
+  border-width: 0 0 1px;
+  border-color: #e7dccf;
+  padding: 0.5rem 0.7rem;
+  justify-content: center;
+  min-height: 34px;
+}
+
+.term-year-option:last-child {
+  border-bottom: 0;
 }
 
 .form-feedback {
