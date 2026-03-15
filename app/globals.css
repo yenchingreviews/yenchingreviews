@@ -548,6 +548,13 @@ a {
   font-weight: 620;
 }
 
+.category-pill.is-pku:hover,
+.category-pill.is-pku.active {
+  background: #232323;
+  border-color: #232323;
+  color: #fff;
+}
+
 .link-button {
   margin-top: 0.45rem;
   font-size: 0.8rem;
@@ -751,7 +758,13 @@ a {
   font-size: 0.9rem;
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  position: relative;
+}
+
+.term-year-pill > span:first-child {
+  width: 100%;
+  text-align: center;
 }
 
 .term-year-pill.open {
@@ -763,6 +776,8 @@ a {
   font-size: 1.05rem;
   line-height: 1;
   font-weight: 600;
+  position: absolute;
+  right: 0.74rem;
 }
 
 .term-year-menu {
@@ -770,7 +785,7 @@ a {
   width: 100%;
   top: calc(100% + 0.35rem);
   border: 1px solid var(--control-line);
-  border-radius: 9px;
+  border-radius: var(--radius-md);
   background: #f4f0ea;
   box-shadow: 0 8px 20px rgba(40, 30, 20, 0.1);
   overflow: hidden;
@@ -782,9 +797,9 @@ a {
   border-radius: 0;
   border-width: 0 0 1px;
   border-color: #e7dccf;
-  padding: 0.5rem 0.7rem;
+  padding: 0.58rem 0.7rem;
   justify-content: center;
-  min-height: 34px;
+  min-height: 36px;
 }
 
 .term-year-option:last-child {
@@ -1175,6 +1190,10 @@ a {
   padding: 0.55rem 0.74rem;
   font: inherit;
   font-size: 0.9rem;
+}
+
+.new-course-section .track-dropdown-wrap {
+  width: 100%;
 }
 
 .track-dropdown-trigger.open {

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { formatCategoryLabel, isYenchingCategory } from '@/app/components/category-label';
 import { trackToken } from '@/app/components/track-token';
 import type { Course, Review } from '@/types/course';
 
@@ -30,8 +31,8 @@ export function CourseDetail({ course, reviews, writeReviewHref, isWriteReviewAc
         <h2 className="detail-name">{course.course_name}</h2>
         <div className="meta detail-meta">
           {course.category_type && (
-            <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
-              {course.category_type}
+            <span className={`tag category ${isYenchingCategory(course.category_type) ? 'is-yenching' : 'is-pku'}`}>
+              {formatCategoryLabel(course.category_type)}
             </span>
           )}
           {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}

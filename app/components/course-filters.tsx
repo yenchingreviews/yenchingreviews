@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { formatCategoryLabel, isYenchingCategory } from '@/app/components/category-label';
 import { trackToken } from '@/app/components/track-token';
 
 type CourseFiltersProps = {
@@ -132,16 +133,16 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
       </div>
 
       <div className="filter-group">
-        <h3>Yenching or PKU-Wide</h3>
+        <h3>Yenching or PKU Wide</h3>
         <div className="filter-row">
           {options.categories.map((category) => (
             <FilterBubble
               key={category}
-              label={category}
+              label={formatCategoryLabel(category)}
               value={category}
               selectedValues={selected.categoryTypes}
               onPick={(value) => toggleSingleFilter('category_type', value)}
-              className={`category ${category === 'Yenching' ? 'is-yenching' : 'is-pku'}`}
+              className={`category ${isYenchingCategory(category) ? 'is-yenching' : 'is-pku'}`}
             />
           ))}
         </div>

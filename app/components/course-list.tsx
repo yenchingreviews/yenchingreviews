@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
+import { formatCategoryLabel, isYenchingCategory } from '@/app/components/category-label';
 import { trackToken } from '@/app/components/track-token';
 import type { Course } from '@/types/course';
 
@@ -95,8 +96,8 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
                   <div className="course-meta-row">
                     <div className="meta course-meta">
                       {course.category_type && (
-                        <span className={`tag category ${course.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
-                          {course.category_type}
+                        <span className={`tag category ${isYenchingCategory(course.category_type) ? 'is-yenching' : 'is-pku'}`}>
+                          {formatCategoryLabel(course.category_type)}
                         </span>
                       )}
                       {course.track_name && <span className={`tag ${trackToken(course.track_name)}`}>{course.track_name}</span>}
