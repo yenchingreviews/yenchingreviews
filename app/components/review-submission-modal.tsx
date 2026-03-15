@@ -610,7 +610,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           )}
 
           {(mode === 'selected' || state.submissionMode === 'existing') && effectiveCourse && (
-            <section className="form-section">
+            <section className="form-section selected-course-section">
               {mode === 'selected' ? <p className="question-heading">1. Which course would you like to review?</p> : null}
               <div className="selected-course-card">
                 {mode === 'global' && (
@@ -765,7 +765,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           <section className="form-section">
             <p className="question-heading">4. How would you rate the quality of this course?</p>
             <div className="quality-scale" role="radiogroup" aria-label="Course quality rating">
-              <span className="quality-anchor">Horrible</span>
+              <span className="quality-anchor">Do not take</span>
               {[1, 2, 3, 4, 5].map((value) => (
                 <button key={value} type="button" className={`pill quality-pill ${state.ratingQuality === value ? 'active' : ''}`} onClick={() => setForm('ratingQuality', value)}>
                   {value}
