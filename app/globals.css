@@ -113,7 +113,19 @@ a {
 .right-column {
   min-height: calc(100vh - 90px);
   height: 100%;
-  padding: 0.75rem 0.9rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.left-column {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+.middle-column,
+.right-column {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .middle-column,
