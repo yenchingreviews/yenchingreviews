@@ -17,9 +17,10 @@ export async function GET(request: Request) {
 
   const { data, error } = await supabase
     .from('reviews')
-    .select('professor_name')
+    .select('professor_name, created_at')
     .eq('course_id', courseId)
-    .not('professor_name', 'is', null);
+    .not('professor_name', 'is', null)
+    .order('created_at', { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: `Could not load professors: ${error.message}` }, { status: 500 });
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
         .map((row) => (row.professor_name as string | null)?.trim())
         .filter((name): name is string => Boolean(name)),
     ),
-  ).sort((a, b) => a.localeCompare(b));
+  );
 
   return NextResponse.json({ professors });
 }

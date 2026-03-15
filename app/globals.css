@@ -393,6 +393,7 @@ a {
   overflow-y: auto;
 }
 
+
 .review-modal {
   width: min(760px, 100%);
   background: var(--surface);
@@ -402,13 +403,15 @@ a {
   max-height: calc(100vh - 5rem);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .review-modal-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.9rem 1rem;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid #eee2d4;
 }
 
@@ -418,60 +421,54 @@ a {
 }
 
 .review-form {
-  padding: 1.25rem;
+  padding: 1.5rem;
+  padding-right: 1.25rem;
   overflow-y: auto;
-  max-width: 640px;
   width: 100%;
-  margin: 0 auto;
+  display: grid;
+  gap: 2.5rem;
 }
 
 .form-section {
-  margin-bottom: 1.3rem;
-}
-
-.form-section:last-of-type {
-  margin-bottom: 0.6rem;
-}
-
-.question-heading {
-  margin: 0 0 0.6rem;
-  font-size: 1rem;
-  font-weight: 550;
-  letter-spacing: var(--tracking-tight);
-  color: #2f261f;
+  display: grid;
+  gap: 0.5rem;
 }
 
 .form-section label,
-.field-title {
+.field-title,
+.question-subheading {
   display: block;
-  margin: 0 0 0.35rem;
+  margin: 0;
   font-size: 0.83rem;
   font-weight: 600;
   letter-spacing: var(--tracking-ui);
   color: #5f5042;
 }
 
-.new-course-section {
-  display: grid;
-  gap: 0.75rem;
+.question-heading {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 550;
+  letter-spacing: var(--tracking-tight);
+  color: #2f261f;
 }
 
-.new-course-section .field-title,
-.new-course-section label {
-  margin: 0;
+.new-course-section {
+  display: grid;
+  gap: 1.5rem;
 }
 
 .create-mode-shell {
-  margin-bottom: 1.7rem;
+  margin-bottom: 0;
 }
 
 .create-mode-card {
   border: 1px solid #e0d5c7;
   border-radius: var(--radius-lg);
   background: #f9f5ef;
-  padding: 0.9rem;
+  padding: 1rem;
   display: grid;
-  gap: 0.7rem;
+  gap: 1.5rem;
 }
 
 .back-to-search {
@@ -491,7 +488,7 @@ a {
 }
 
 .create-mode-helper {
-  margin: -0.25rem 0 0;
+  margin: 0;
   font-size: 0.85rem;
   color: #6f6052;
 }
@@ -502,9 +499,13 @@ a {
   width: 100%;
   border: 1px solid #dfd2c2;
   border-radius: var(--radius-sm);
-  padding: 0.52rem 0.62rem;
+  padding: 0.6rem 0.7rem;
   font: inherit;
   background: #fff;
+}
+
+.review-form textarea {
+  min-height: 180px;
 }
 
 .review-form select {
@@ -530,46 +531,17 @@ a {
 .suggestion-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.centered-answer-row {
-  justify-content: center;
-}
-
-
-.professor-choice-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  align-items: center;
-  justify-content: center;
-}
-
-.professor-choice-row .chip {
-  min-height: 36px;
-}
-
-.add-action-chip {
-  color: #7c1e28;
-  border-color: #d7a0a5;
-  background: #f6ece2;
-}
-
-.add-action-chip:hover {
-  border-color: var(--brand-red);
-  background: var(--brand-red);
-  color: #fff;
+  gap: 0.5rem;
+  justify-content: flex-start;
 }
 
 .professor-loading-shell {
   display: flex;
-  justify-content: center;
 }
 
 .professor-skeleton {
-  width: min(420px, 100%);
-  height: 36px;
+  width: 100%;
+  height: 40px;
   border-radius: var(--radius-sm);
   border: 1px solid #e2d6c8;
   background: linear-gradient(90deg, #f0e7dc 0%, #faf6f0 50%, #f0e7dc 100%);
@@ -640,7 +612,7 @@ a {
 
 .autocomplete-wrap input {
   padding-right: 2rem;
-  min-height: 36px;
+  min-height: 40px;
   font-size: 0.9rem;
   line-height: 1;
 }
@@ -680,7 +652,7 @@ a {
   background: #fff;
   color: #4f4032;
   font: inherit;
-  padding: 0.55rem 0.7rem;
+  padding: 0.65rem 0.7rem;
   cursor: pointer;
 }
 
@@ -709,18 +681,22 @@ a {
   font-size: 0.86rem;
 }
 
+.selected-course-section {
+  gap: 0.35rem;
+}
+
 .selected-course-card {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
   background: var(--cream-soft);
-  padding: 0.8rem;
+  padding: 0.7rem;
   position: relative;
 }
 
 .selected-course-clear {
   position: absolute;
-  top: 0.45rem;
-  right: 0.45rem;
+  top: 0.35rem;
+  right: 0.4rem;
   border: 0;
   background: transparent;
   color: #7f7061;
@@ -736,56 +712,23 @@ a {
 }
 
 .selected-course-tags {
-  margin-top: 0.55rem;
+  margin-top: 0.45rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .inline-input-action {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.55rem;
-  align-items: center;
+  gap: 0.5rem;
 }
 
-.inline-input-action.fused {
-  border: 1px solid #dfd2c2;
-  border-radius: var(--radius-md);
-  padding: 0.2rem;
-  gap: 0.2rem;
-  background: #fff;
-}
-
-.inline-input-action.fused input {
-  border: 0;
-  padding: 0.45rem 0.55rem;
-}
-
-.inline-input-action.fused input:focus {
-  outline: none;
-}
-
-.danger-button {
-  border: 1px solid #9f1e2b;
-  border-radius: var(--radius-sm);
-  background: #b61d2d;
-  color: #fff;
-  padding: 0.52rem 0.85rem;
-  font: inherit;
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: var(--tracking-ui);
-  cursor: pointer;
-}
-
-.danger-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+.professor-input input {
+  min-height: 40px;
 }
 
 .form-hint {
-  margin: 0.3rem 0;
+  margin: 0;
   font-size: 0.8rem;
   color: #786a5d;
 }
@@ -808,49 +751,35 @@ a {
 
 .term-control-stack {
   display: grid;
-  grid-template-columns: auto auto;
-  justify-content: center;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 160px);
   align-items: start;
-  column-gap: 1.7rem;
-  gap: 0.75rem;
-  margin-inline: auto;
+  column-gap: 0.45rem;
 }
 
 .term-control-group {
   display: grid;
-  gap: 0.42rem;
-  justify-items: center;
-}
-
-.question-subheading {
-  margin: 0;
-  font-size: 0.79rem;
-  font-weight: 600;
-  letter-spacing: var(--tracking-ui);
-  color: #7a6b5d;
+  gap: 0.5rem;
 }
 
 .term-season-row .pill {
-  min-width: 0;
+  min-width: 96px;
   text-align: center;
-  min-height: 36px;
+  min-height: 40px;
   font-size: 0.9rem;
   padding: 0.34rem 0.78rem;
 }
 
 .term-year-dropdown {
   position: relative;
-  width: fit-content;
-  min-width: 86px;
-  max-width: 106px;
+  width: 100%;
 }
 
 .term-year-pill {
   width: 100%;
   justify-content: space-between;
-  min-height: 36px;
+  min-height: 40px;
   font-size: 0.9rem;
-  padding: 0.34rem 1.05rem 0.34rem 0.9rem;
+  padding: 0.34rem 0.8rem;
   gap: 0.75rem;
 }
 
@@ -887,8 +816,33 @@ a {
   border-bottom: 0;
 }
 
+.quality-scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quality-anchor {
+  font-size: 0.85rem;
+  color: #6d5f52;
+  font-weight: 600;
+}
+
+.quality-pill {
+  width: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+}
+
+.workload-row .pill {
+  min-height: 40px;
+  min-width: 100px;
+}
+
 .form-feedback {
-  margin: 0.6rem 0;
+  margin: -1.25rem 0 0;
   font-size: 0.86rem;
 }
 
@@ -898,6 +852,8 @@ a {
 .review-modal-actions {
   display: flex;
   justify-content: flex-end;
+  margin-top: -0.5rem;
+  padding-top: 0.5rem;
 }
 
 .review-success-state {
@@ -1023,38 +979,40 @@ a {
 }
 
 @media (max-width: 640px) {
+  .review-modal-head {
+    padding: 0.9rem 1rem;
+  }
+
   .review-form {
     padding: 1rem;
+    padding-right: 0.85rem;
+    gap: 2rem;
   }
 
   .split {
     grid-template-columns: 1fr;
   }
 
-  .inline-input-action {
-    grid-template-columns: 1fr;
-  }
-
   .term-control-stack {
     grid-template-columns: 1fr;
-    justify-items: center;
-  }
-
-  .term-control-group {
-    width: 100%;
-  }
-
-  .term-season-row {
-    flex-direction: column;
-    width: 100%;
+    gap: 1rem;
   }
 
   .term-season-row .pill {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .quality-anchor {
     width: 100%;
   }
 
-  .term-year-dropdown {
-    width: fit-content;
+  .review-modal-actions {
+    justify-content: stretch;
+  }
+
+  .review-modal-actions .submit-button {
+    width: 100%;
   }
 }
 
@@ -1276,6 +1234,14 @@ a {
   position: relative;
 }
 
+.professor-dropdown {
+  width: 100%;
+}
+
+.professor-dropdown .track-option.add-new-course-option {
+  justify-content: flex-start;
+}
+
 .track-dropdown-trigger {
   width: 100%;
   display: flex;
@@ -1377,38 +1343,6 @@ a {
   font-size: 0.83rem;
   font-weight: 500;
   color: #7a6a5b;
-}
-
-.professor-inline-editor {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.22rem 0.3rem;
-}
-
-.professor-inline-editor input {
-  border: 0;
-  background: transparent;
-  min-width: 150px;
-  padding: 0.2rem;
-}
-
-.professor-inline-editor input:focus {
-  outline: none;
-}
-
-.professor-inline-submit {
-  border: 1px solid #b4232a;
-  border-radius: 7px;
-  background: #b4232a;
-  color: #fff;
-  padding: 0.18rem 0.5rem;
-  cursor: pointer;
-}
-
-.professor-inline-submit:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
 }
 
 .track-dot {
