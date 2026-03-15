@@ -531,7 +531,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
               <p className="field-title">Language</p>
               <div className="filter-row">
-                {['English', 'Chinese', 'Bilingual', 'Other'].map((language) => (
+                {['Chinese', 'English'].map((language) => (
                   <button
                     key={language}
                     type="button"
