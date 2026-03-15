@@ -52,11 +52,13 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false);
   const [isYearMenuOpen, setIsYearMenuOpen] = useState(false);
+  const [isTermMenuOpen, setIsTermMenuOpen] = useState(false);
   const [isNewTrackMenuOpen, setIsNewTrackMenuOpen] = useState(false);
   const [isUsedTrackMenuOpen, setIsUsedTrackMenuOpen] = useState(false);
   const [isProfessorMenuOpen, setIsProfessorMenuOpen] = useState(false);
   const [professorCache, setProfessorCache] = useState<Record<string, string[]>>({});
   const yearDropdownRef = useRef<HTMLDivElement | null>(null);
+  const termDropdownRef = useRef<HTMLDivElement | null>(null);
   const newTrackDropdownRef = useRef<HTMLDivElement | null>(null);
   const usedTrackDropdownRef = useRef<HTMLDivElement | null>(null);
   const professorDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -90,6 +92,21 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const reviewIsTooShort = state.reviewText.trim().length < 10;
   const isOpen = mode !== null;
   const isCreateMode = mode === 'global' && state.submissionMode === 'new';
+  const hasSelectedExistingCourse = state.submissionMode === 'existing' && Boolean(state.selectedCourseId);
+
+  const professorUiState = useMemo(() => {
+    if (state.submissionMode === 'new') {
+      return state.professorMode === 'new' ? 'input' : 'dropdown';
+    }
+    if (!hasSelectedExistingCourse) return 'disabled';
+    if (state.professorMode === 'new') return 'input';
+    return 'dropdown';
+  }, [hasSelectedExistingCourse, state.professorMode, state.submissionMode]);
+
+  const professorDropdownOptions = useMemo(() => {
+    if (state.submissionMode === 'new') return [];
+    return professorOptions;
+  }, [professorOptions, state.submissionMode]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -183,6 +200,9 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       if (!yearDropdownRef.current?.contains(event.target as Node)) {
         setIsYearMenuOpen(false);
       }
+      if (!termDropdownRef.current?.contains(event.target as Node)) {
+        setIsTermMenuOpen(false);
+      }
       if (!newTrackDropdownRef.current?.contains(event.target as Node)) {
         setIsNewTrackMenuOpen(false);
       }
@@ -194,12 +214,12 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       }
     }
 
-    if (isYearMenuOpen || isNewTrackMenuOpen || isUsedTrackMenuOpen || isProfessorMenuOpen) {
+    if (isYearMenuOpen || isTermMenuOpen || isNewTrackMenuOpen || isUsedTrackMenuOpen || isProfessorMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isYearMenuOpen, isNewTrackMenuOpen, isUsedTrackMenuOpen, isProfessorMenuOpen]);
+  }, [isYearMenuOpen, isTermMenuOpen, isNewTrackMenuOpen, isUsedTrackMenuOpen, isProfessorMenuOpen]);
 
   if (!isOpen) return null;
 
@@ -253,7 +273,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       newCourseLanguage: '',
       usedForTrackCredit: false,
       usedForTrack: '',
-      professorMode: 'new',
+      professorMode: 'existing',
       selectedProfessor: '',
       professorName: '',
     }));
@@ -292,20 +312,6 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       professorName: '',
     }));
     setIsCourseDropdownOpen(true);
-  }
-
-  function addNewProfessor() {
-    const trimmedProfessor = state.professorName.trim();
-    if (!trimmedProfessor) return;
-
-    setProfessorOptions((current) => [trimmedProfessor, ...current.filter((name) => name !== trimmedProfessor)]);
-    setState((current) => ({
-      ...current,
-      professorMode: 'existing',
-      selectedProfessor: trimmedProfessor,
-      professorName: '',
-    }));
-    setIsProfessorMenuOpen(false);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -389,7 +395,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       <div className="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-modal-title" onClick={(event) => event.stopPropagation()}>
         <div className="review-modal-head">
           <h2 id="review-modal-title">{mode === 'selected' ? 'Write a Review' : 'Add Review'}</h2>
-          <button type="button" className="modal-close" onClick={closeModal}>✕</button>
+          <button type="button" className="modal-close" aria-label="Close review modal" onClick={closeModal}>✕</button>
         </div>
 
         {isSubmitted ? (
@@ -610,7 +616,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           )}
 
           {(mode === 'selected' || state.submissionMode === 'existing') && effectiveCourse && (
-            <section className="form-section selected-course-section">
+            <section className={`form-section selected-course-section ${mode === 'selected' ? 'with-question' : ''}`}>
               {mode === 'selected' ? <p className="question-heading">1. Which course would you like to review?</p> : null}
               <div className="selected-course-card">
                 {mode === 'global' && (
@@ -633,13 +639,31 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           <section className="form-section">
             <p className="question-heading">2. Which professor taught this course?</p>
 
-            {state.submissionMode === 'existing' && isLoadingProfessors && (
+            {professorUiState === 'dropdown' && state.submissionMode === 'existing' && isLoadingProfessors && (
               <div className="professor-loading-shell" aria-live="polite" aria-busy="true">
                 <div className="professor-skeleton" />
               </div>
             )}
 
-            {state.professorMode === 'existing' && !isLoadingProfessors && (
+            {professorUiState === 'disabled' && (
+              <>
+                <div className="track-dropdown-wrap professor-dropdown" ref={professorDropdownRef}>
+                  <button
+                    id="professor-select"
+                    type="button"
+                    className="filter-control track-dropdown-trigger"
+                    disabled
+                    aria-disabled="true"
+                  >
+                    <span className="track-trigger-label">Select professor</span>
+                    <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+                  </button>
+                </div>
+                <p className="form-hint form-hint-subtle">Select a course first to choose or add a professor.</p>
+              </>
+            )}
+
+            {professorUiState === 'dropdown' && !isLoadingProfessors && (
               <div className="track-dropdown-wrap professor-dropdown" ref={professorDropdownRef}>
                 <button
                   id="professor-select"
@@ -655,7 +679,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
                 {isProfessorMenuOpen && (
                   <div className="track-dropdown-menu" role="listbox" aria-label="Select professor">
-                    {professorOptions.map((professor) => {
+                    {professorDropdownOptions.map((professor) => {
                       const active = state.selectedProfessor === professor;
                       return (
                         <button
@@ -688,36 +712,56 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
               </div>
             )}
 
-            {(state.professorMode === 'new' || (professorOptions.length === 0 && !isLoadingProfessors)) && (
+            {professorUiState === 'input' && (
               <div className="inline-input-action professor-input">
                 <input
                   value={state.professorName}
                   onChange={(event) => setForm('professorName', event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      addNewProfessor();
-                    }
-                  }}
                   placeholder="Professor name"
                   autoFocus
                 />
-                <p className="form-hint">Press Enter to confirm the professor.</p>
               </div>
             )}
           </section>
 
           <section className="form-section">
             <p className="question-heading">3. When did you take this course?</p>
-            <div className="term-control-stack">
+            <div className="term-control-row">
               <div className="term-control-group">
                 <p className="question-subheading">Term</p>
-                <div className="pill-row term-season-row">
-                  {['Fall', 'Spring'].map((season) => (
-                    <button key={season} type="button" className={`pill ${state.termSeason === season ? 'active' : ''}`} onClick={() => setForm('termSeason', season as FormState['termSeason'])}>
-                      {season}
-                    </button>
-                  ))}
+                <div className="track-dropdown-wrap term-dropdown" ref={termDropdownRef}>
+                  <button
+                    id="term-season"
+                    type="button"
+                    className={`filter-control track-dropdown-trigger term-pill ${isTermMenuOpen ? 'open' : ''}`}
+                    onClick={() => setIsTermMenuOpen((open) => !open)}
+                    aria-haspopup="listbox"
+                    aria-expanded={isTermMenuOpen}
+                  >
+                    <span>{state.termSeason ?? 'Select term'}</span>
+                    <span aria-hidden="true" className="term-year-caret">▾</span>
+                  </button>
+
+                  {isTermMenuOpen && (
+                    <div className="track-dropdown-menu term-year-menu" role="listbox" aria-label="Select term season">
+                      {['Fall', 'Spring'].map((season) => {
+                        const active = state.termSeason === season;
+                        return (
+                          <button
+                            key={season}
+                            type="button"
+                            className={`filter-control track-option term-year-option ${active ? 'active' : ''}`}
+                            onClick={() => {
+                              setForm('termSeason', season as FormState['termSeason']);
+                              setIsTermMenuOpen(false);
+                            }}
+                          >
+                            {season}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
 
