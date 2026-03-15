@@ -18,7 +18,7 @@ type CourseListProps = {
   };
 };
 
-export function CourseList({ courses, selectedCourseId, activeQuery }: CourseListProps) {
+export function CourseList({ courses, selectedCourseId, activeQuery, onCourseSelect }: CourseListProps & { onCourseSelect?: () => void }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -91,7 +91,12 @@ export function CourseList({ courses, selectedCourseId, activeQuery }: CourseLis
 
             return (
               <li key={course.course_id} className={`course-item ${isActive ? 'selected' : ''}`}>
-                <Link href={`/?${params.toString()}`} scroll={false} className="course-link">
+                <Link
+                  href={`/?${params.toString()}`}
+                  scroll={false}
+                  className="course-link"
+                  onClick={onCourseSelect}
+                >
                   <h3 className="course-name">{course.course_name}</h3>
                   <div className="course-meta-row">
                     <div className="meta course-meta">

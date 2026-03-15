@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { formatCategoryLabel, isYenchingCategory } from '@/app/components/category-label';
 import { trackToken } from '@/app/components/track-token';
 
@@ -18,7 +18,6 @@ type CourseFiltersProps = {
   };
 };
 
-// Keep query param helpers defined once in this file (single source of truth).
 function parseParamList(value: string | null) {
   if (!value) return [];
   return value.split(',').map((entry) => entry.trim()).filter(Boolean);
@@ -34,6 +33,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [isTrackMenuOpen, setIsTrackMenuOpen] = useState(false);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const trackDropdownRef = useRef<HTMLDivElement | null>(null);
   const selectedTrack = selected.trackNames[0] ?? '';
@@ -121,128 +121,144 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
     );
   }
 
-  const anyFilterActive = selected.categoryTypes.length > 0 || selected.trackNames.length > 0 || selected.languages.length > 0;
+  const activeFilterCount = selected.categoryTypes.length + selected.trackNames.length + selected.languages.length;
+  const anyFilterActive = activeFilterCount > 0;
 
   return (
     <section className="filter-panel">
-      <div className="panel-header-row filters-header-row">
-        <h2 className="panel-title panel-title-filters">Filters</h2>
-        <button type="button" className={`filter-control clear-filters ${anyFilterActive ? 'is-active' : ''}`} onClick={resetAll}>
-          Clear All
-        </button>
-      </div>
+      <button
+        type="button"
+        className={`mobile-filters-toggle ${isMobileFiltersOpen ? 'open' : ''}`}
+        onClick={() => setIsMobileFiltersOpen((open) => !open)}
+        aria-expanded={isMobileFiltersOpen}
+      >
+        <span className="mobile-filters-toggle-label">Filters</span>
+        <span className="mobile-filters-toggle-meta">
+          {activeFilterCount > 0 && <span className="mobile-filter-count-badge">{activeFilterCount}</span>}
+          <span className="mobile-filters-chevron" aria-hidden="true">{isMobileFiltersOpen ? '▴' : '▾'}</span>
+        </span>
+      </button>
 
-      <div className="filter-group">
-        <h3>Yenching or PKU Wide</h3>
-        <div className="filter-row">
-          {options.categories.map((category) => (
-            <FilterBubble
-              key={category}
-              label={formatCategoryLabel(category)}
-              value={category}
-              selectedValues={selected.categoryTypes}
-              onPick={(value) => toggleSingleFilter('category_type', value)}
-              className={`category ${isYenchingCategory(category) ? 'is-yenching' : 'is-pku'}`}
-            />
-          ))}
+      <div className={`filter-panel-content ${isMobileFiltersOpen ? 'is-open' : ''}`}>
+        <div className="panel-header-row filters-header-row">
+          <h2 className="panel-title panel-title-filters">Filters</h2>
+          <button type="button" className={`filter-control clear-filters ${anyFilterActive ? 'is-active' : ''}`} onClick={resetAll}>
+            Clear All
+          </button>
         </div>
-      </div>
 
-      <div className="filter-group">
-        <h3>Track</h3>
-        <div className="track-dropdown-wrap" ref={trackDropdownRef}>
-          <button
-            type="button"
-            className={`filter-control track-dropdown-trigger ${isTrackMenuOpen ? 'open' : ''}`}
-            onClick={() => setIsTrackMenuOpen((open) => !open)}
-            aria-haspopup="listbox"
-            aria-expanded={isTrackMenuOpen}
-          >
-            <span className="track-trigger-label">
-              {selectedTrack ? (
-                <span className="track-trigger-selected">
-                  <span className={`track-dot ${trackToken(selectedTrack)}`} aria-hidden="true" />
-                  <span>{selectedTrack}</span>
-                </span>
-              ) : (
-                'Filter by track'
-              )}
-            </span>
-            <span className="track-trigger-actions">
-              {selectedTrack && (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  className="track-clear"
-                  aria-label="Clear selected track"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    resetGroup('track_name');
-                    setIsTrackMenuOpen(false);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
+        <div className="filter-group">
+          <h3>Yenching or PKU Wide</h3>
+          <div className="filter-row">
+            {options.categories.map((category) => (
+              <FilterBubble
+                key={category}
+                label={formatCategoryLabel(category)}
+                value={category}
+                selectedValues={selected.categoryTypes}
+                onPick={(value) => toggleSingleFilter('category_type', value)}
+                className={`category ${isYenchingCategory(category) ? 'is-yenching' : 'is-pku'}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-group">
+          <h3>Track</h3>
+          <div className="track-dropdown-wrap" ref={trackDropdownRef}>
+            <button
+              type="button"
+              className={`filter-control track-dropdown-trigger ${isTrackMenuOpen ? 'open' : ''}`}
+              onClick={() => setIsTrackMenuOpen((open) => !open)}
+              aria-haspopup="listbox"
+              aria-expanded={isTrackMenuOpen}
+            >
+              <span className="track-trigger-label">
+                {selectedTrack ? (
+                  <span className="track-trigger-selected">
+                    <span className={`track-dot ${trackToken(selectedTrack)}`} aria-hidden="true" />
+                    <span>{selectedTrack}</span>
+                  </span>
+                ) : (
+                  'Filter by track'
+                )}
+              </span>
+              <span className="track-trigger-actions">
+                {selectedTrack && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="track-clear"
+                    aria-label="Clear selected track"
+                    onClick={(event) => {
                       event.stopPropagation();
                       resetGroup('track_name');
                       setIsTrackMenuOpen(false);
-                    }
-                  }}
-                >
-                  ✕
-                </span>
-              )}
-              <span aria-hidden="true" className="track-dropdown-caret">▾</span>
-            </span>
-          </button>
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        resetGroup('track_name');
+                        setIsTrackMenuOpen(false);
+                      }
+                    }}
+                  >
+                    ✕
+                  </span>
+                )}
+                <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+              </span>
+            </button>
 
-          {isTrackMenuOpen && (
-            <div className="track-dropdown-menu" role="listbox" aria-label="Filter by track">
-              <button
-                type="button"
-                className={`filter-control track-option ${selected.trackNames.length === 0 ? 'active' : ''}`}
-                onClick={() => resetGroup('track_name')}
-              >
-                <span className="track-dot track-neutral" aria-hidden="true" />
-                <span>All tracks</span>
-              </button>
-
-              {options.tracks.map((track) => (
+            {isTrackMenuOpen && (
+              <div className="track-dropdown-menu" role="listbox" aria-label="Filter by track">
                 <button
-                  key={track}
                   type="button"
-                  className={`filter-control track-option ${selectedTrack === track ? 'active' : ''}`}
-                  onClick={() => {
-                    selectSingleFilter('track_name', track);
-                    setIsTrackMenuOpen(false);
-                  }}
+                  className={`filter-control track-option ${selected.trackNames.length === 0 ? 'active' : ''}`}
+                  onClick={() => resetGroup('track_name')}
                 >
-                  <span className={`track-dot ${trackToken(track)}`} aria-hidden="true" />
-                  <span>{track}</span>
+                  <span className="track-dot track-neutral" aria-hidden="true" />
+                  <span>All tracks</span>
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
 
-      <div className="filter-group">
-        <h3>Language</h3>
-        <div className="filter-row">
-          {options.languages.map((language) => (
-            <FilterBubble
-              key={language}
-              label={language}
-              value={language}
-              selectedValues={selected.languages}
-              onPick={(value) => toggleSingleFilter('language', value)}
-              className="language"
-            />
-          ))}
+                {options.tracks.map((track) => (
+                  <button
+                    key={track}
+                    type="button"
+                    className={`filter-control track-option ${selectedTrack === track ? 'active' : ''}`}
+                    onClick={() => {
+                      selectSingleFilter('track_name', track);
+                      setIsTrackMenuOpen(false);
+                    }}
+                  >
+                    <span className={`track-dot ${trackToken(track)}`} aria-hidden="true" />
+                    <span>{track}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <p className="filter-status">{isPending ? 'Updating…' : anyFilterActive ? 'Filters applied' : 'No filters applied'}</p>
+        <div className="filter-group">
+          <h3>Language</h3>
+          <div className="filter-row">
+            {options.languages.map((language) => (
+              <FilterBubble
+                key={language}
+                label={language}
+                value={language}
+                selectedValues={selected.languages}
+                onPick={(value) => toggleSingleFilter('language', value)}
+                className="language"
+              />
+            ))}
+          </div>
+        </div>
+
+        <p className="filter-status">{isPending ? 'Updating…' : anyFilterActive ? 'Filters applied' : 'No filters applied'}</p>
+      </div>
     </section>
   );
 }

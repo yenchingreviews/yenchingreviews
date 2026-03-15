@@ -2,6 +2,7 @@ import { CourseDetail } from '@/app/components/course-detail';
 import { CourseFilters } from '@/app/components/course-filters';
 import { CourseList } from '@/app/components/course-list';
 import { Header } from '@/app/components/header';
+import { MobileCatalogShell } from '@/app/components/mobile-catalog-shell';
 import { ReviewSubmissionModal } from '@/app/components/review-submission-modal';
 import { getCourseFilterOptions, getCourses, getReviewsForCourse } from '@/lib/courses';
 
@@ -73,13 +74,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     selectedParams.set('selected_course_id', selectedCourse.course_id);
   }
 
+  const writeReviewHref = selectedCourse ? `/?${selectedParams.toString()}` : null;
+
   return (
     <>
       <Header addReviewHref={`/?${globalParams.toString()}`} isAddReviewActive={reviewMode === 'global'} />
       <main className="catalog-page">
         {(results.error || reviewResults.error) && <p className="notice">{results.error ?? reviewResults.error}</p>}
 
-        <div className="catalog-grid">
+        <div className="desktop-catalog-grid catalog-grid">
           <div className="left-column">
             <CourseFilters selected={{ categoryTypes: selected.categoryTypes, trackNames: selected.trackNames, languages: selected.languages }} options={filters} />
           </div>
@@ -94,10 +97,22 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <CourseDetail
               course={selectedCourse}
               reviews={reviewResults.reviews}
-              writeReviewHref={selectedCourse ? `/?${selectedParams.toString()}` : null}
+              writeReviewHref={writeReviewHref}
               isWriteReviewActive={reviewMode === 'selected'}
             />
           </div>
+        </div>
+
+        <div className="mobile-only-catalog">
+          <MobileCatalogShell
+            selected={selected}
+            filters={filters}
+            courses={results.courses}
+            selectedCourse={selectedCourse}
+            reviews={reviewResults.reviews}
+            writeReviewHref={writeReviewHref}
+            isWriteReviewActive={reviewMode === 'selected'}
+          />
         </div>
 
         <ReviewSubmissionModal
