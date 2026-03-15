@@ -825,8 +825,8 @@ a {
 .term-year-dropdown {
   position: relative;
   width: fit-content;
-  min-width: 120px;
-  max-width: 150px;
+  min-width: 108px;
+  max-width: 132px;
 }
 
 .term-year-pill {
