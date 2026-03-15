@@ -12,8 +12,8 @@ export function Header({ addReviewHref, isAddReviewActive = false }: HeaderProps
         <Link href="/" className="logo">
           yenchingreviews
         </Link>
-        <nav>
-          <Link href="/" className="nav-link is-active">
+        <nav className="topbar-nav">
+          <Link href="/" className="nav-link is-active desktop-only-nav-link">
             Catalog
           </Link>
           <Link href={addReviewHref} className={`nav-link-cta filter-control action-control btn-create ${isAddReviewActive ? 'active' : ''}`}>

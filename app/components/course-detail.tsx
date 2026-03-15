@@ -8,6 +8,8 @@ type CourseDetailProps = {
   reviews: Review[];
   writeReviewHref: string | null;
   isWriteReviewActive?: boolean;
+  onBack?: () => void;
+  showMobileBack?: boolean;
 };
 
 function renderTerm(review: Review) {
@@ -16,10 +18,22 @@ function renderTerm(review: Review) {
   return 'Term unavailable';
 }
 
-export function CourseDetail({ course, reviews, writeReviewHref, isWriteReviewActive = false }: CourseDetailProps) {
+export function CourseDetail({
+  course,
+  reviews,
+  writeReviewHref,
+  isWriteReviewActive = false,
+  onBack,
+  showMobileBack = false,
+}: CourseDetailProps) {
   if (!course) {
     return (
       <section className="panel detail-panel detail-panel-empty">
+        {showMobileBack && onBack && (
+          <button type="button" className="mobile-detail-back" onClick={onBack}>
+            ← Back
+          </button>
+        )}
         <p className="detail-empty-message">Select a course from the catalog to see reviews.</p>
       </section>
     );
@@ -27,6 +41,11 @@ export function CourseDetail({ course, reviews, writeReviewHref, isWriteReviewAc
 
   return (
     <section className="panel detail-panel">
+      {showMobileBack && onBack && (
+        <button type="button" className="mobile-detail-back" onClick={onBack}>
+          ← Back
+        </button>
+      )}
       <div className="detail-header">
         <h2 className="detail-name">{course.course_name}</h2>
         <div className="meta detail-meta">
