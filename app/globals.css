@@ -956,7 +956,11 @@ a {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border-color 140ms ease, background-color 140ms ease;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 7px;
+  border: 1px solid var(--control-line);
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
 }
 
 .filter-tag:hover {
@@ -972,13 +976,6 @@ a {
   font-weight: 620;
 }
 
-.filter-tag {
-  background: transparent;
-  color: var(--muted);
-  border-radius: 7px;
-  border-color: var(--control-line);
-}
-
 .filter-tag.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
 .filter-tag.track-general { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
 .filter-tag.track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
@@ -988,7 +985,8 @@ a {
 .filter-tag.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
 .filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
-.filter-tag.category.is-yenching.active {
+.filter-tag.category.is-yenching.active,
+.filter-tag.language.active {
   background: var(--brand-red);
   border-color: var(--brand-red);
 }
@@ -1176,7 +1174,7 @@ a {
 }
 
 .track-option:hover {
-  background: #f6efe6;
+  background: #ece2d6;
 }
 
 .track-option.active {

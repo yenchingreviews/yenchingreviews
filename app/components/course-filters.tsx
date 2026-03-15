@@ -67,12 +67,10 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
     });
   }
 
-  function toggleFilter(name: string, value: string) {
+  function toggleSingleFilter(name: string, value: string) {
     const currentValues = parseParamList(searchParams.get(name));
-    const nextValues = currentValues.includes(value)
-      ? currentValues.filter((entry) => entry !== value)
-      : [...currentValues, value];
-
+    const isSameSelection = currentValues.length === 1 && currentValues[0] === value;
+    const nextValues = isSameSelection ? [] : [value];
     pushParamList(name, nextValues);
   }
 
@@ -142,7 +140,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
               label={category}
               value={category}
               selectedValues={selected.categoryTypes}
-              onPick={(value) => toggleFilter('category_type', value)}
+              onPick={(value) => toggleSingleFilter('category_type', value)}
               className={`category ${category === 'Yenching' ? 'is-yenching' : 'is-pku'}`}
             />
           ))}
@@ -236,7 +234,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
               label={language}
               value={language}
               selectedValues={selected.languages}
-              onPick={(value) => toggleFilter('language', value)}
+              onPick={(value) => toggleSingleFilter('language', value)}
               className="language"
             />
           ))}
