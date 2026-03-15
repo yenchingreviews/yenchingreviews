@@ -9,6 +9,7 @@ type SubmitReviewPayload = {
   courseName?: string;
   categoryType?: 'Yenching' | 'PKU-Wide' | string;
   trackName?: string;
+  language?: string;
   usedForTrackCredit?: boolean;
   usedForTrack?: string;
   professorName?: string;
@@ -83,6 +84,7 @@ function sanitizePayload(raw: SubmitReviewPayload) {
 
   const courseName = trimText(raw.courseName);
   const categoryType = trimText(raw.categoryType);
+  const language = trimText(raw.language);
 
   if (!courseName) return { error: 'Course name is required.' };
   if (!allowedCategories.has(categoryType)) return { error: 'Category is required.' };
@@ -112,6 +114,7 @@ function sanitizePayload(raw: SubmitReviewPayload) {
       courseName,
       categoryType: normalizedCategory,
       trackName,
+      language: language || null,
       usedForTrack,
       usedForTrackCredit,
     },
@@ -236,6 +239,7 @@ export async function POST(request: Request) {
           course_name: parsed.value.courseName,
           category_type: parsed.value.categoryType,
           track_name: parsed.value.trackName,
+          language: parsed.value.language,
           legacy_course: false,
           created_at: now,
           updated_at: now,

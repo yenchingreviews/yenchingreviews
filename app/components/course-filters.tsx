@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { trackToken } from '@/app/components/track-token';
 
 type CourseFiltersProps = {
@@ -34,7 +34,22 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
   const [isPending, startTransition] = useTransition();
   const [isTrackMenuOpen, setIsTrackMenuOpen] = useState(false);
 
-  const selectedTrackSet = useMemo(() => new Set(selected.trackNames), [selected.trackNames]);
+  const trackDropdownRef = useRef<HTMLDivElement | null>(null);
+  const selectedTrack = selected.trackNames[0] ?? '';
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (!trackDropdownRef.current?.contains(event.target as Node)) {
+        setIsTrackMenuOpen(false);
+      }
+    }
+
+    if (isTrackMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isTrackMenuOpen]);
 
   function pushParamList(name: string, values: string[]) {
     const params = new URLSearchParams(searchParams.toString());
@@ -59,6 +74,10 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
       : [...currentValues, value];
 
     pushParamList(name, nextValues);
+  }
+
+  function selectSingleFilter(name: string, value: string) {
+    pushParamList(name, [value]);
   }
 
   function resetGroup(name: string) {
@@ -117,13 +136,6 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
       <div className="filter-group">
         <h3>Yenching or PKU-Wide</h3>
         <div className="filter-row">
-          <button
-            type="button"
-            className={`tag filter-tag all-tag ${selected.categoryTypes.length === 0 ? 'active all-active' : ''}`}
-            onClick={() => resetGroup('category_type')}
-          >
-            All
-          </button>
           {options.categories.map((category) => (
             <FilterBubble
               key={category}
@@ -139,7 +151,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
 
       <div className="filter-group">
         <h3>Track</h3>
-        <div className="track-dropdown-wrap">
+        <div className="track-dropdown-wrap" ref={trackDropdownRef}>
           <button
             type="button"
             className={`track-dropdown-trigger ${isTrackMenuOpen ? 'open' : ''}`}
@@ -147,8 +159,42 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
             aria-haspopup="listbox"
             aria-expanded={isTrackMenuOpen}
           >
-            <span>{selected.trackNames.length > 0 ? `Filter by track (${selected.trackNames.length})` : 'Filter by track'}</span>
-            <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+            <span className="track-trigger-label">
+              {selectedTrack ? (
+                <span className="track-trigger-selected">
+                  <span className={`track-dot ${trackToken(selectedTrack)}`} aria-hidden="true" />
+                  <span>{selectedTrack}</span>
+                </span>
+              ) : (
+                'Filter by track'
+              )}
+            </span>
+            <span className="track-trigger-actions">
+              {selectedTrack && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="track-clear"
+                  aria-label="Clear selected track"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    resetGroup('track_name');
+                    setIsTrackMenuOpen(false);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      resetGroup('track_name');
+                      setIsTrackMenuOpen(false);
+                    }
+                  }}
+                >
+                  ✕
+                </span>
+              )}
+              <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+            </span>
           </button>
 
           {isTrackMenuOpen && (
@@ -166,8 +212,11 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
                 <button
                   key={track}
                   type="button"
-                  className={`track-option ${selectedTrackSet.has(track) ? 'active' : ''}`}
-                  onClick={() => toggleFilter('track_name', track)}
+                  className={`track-option ${selectedTrack === track ? 'active' : ''}`}
+                  onClick={() => {
+                    selectSingleFilter('track_name', track);
+                    setIsTrackMenuOpen(false);
+                  }}
                 >
                   <span className={`track-dot ${trackToken(track)}`} aria-hidden="true" />
                   <span>{track}</span>
@@ -181,13 +230,6 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
       <div className="filter-group">
         <h3>Language</h3>
         <div className="filter-row">
-          <button
-            type="button"
-            className={`tag filter-tag all-tag ${selected.languages.length === 0 ? 'active all-active' : ''}`}
-            onClick={() => resetGroup('language')}
-          >
-            All
-          </button>
           {options.languages.map((language) => (
             <FilterBubble
               key={language}

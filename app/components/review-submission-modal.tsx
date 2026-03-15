@@ -21,6 +21,7 @@ type FormState = {
   newCourseName: string;
   categoryType: 'Yenching' | 'PKU-Wide';
   trackName: string;
+  newCourseLanguage: string;
   usedForTrackCredit: boolean;
   usedForTrack: string;
   professorMode: 'existing' | 'new';
@@ -28,8 +29,8 @@ type FormState = {
   selectedProfessor: string;
   termSeason: 'Fall' | 'Spring';
   termYear: string;
-  ratingQuality: number;
-  ratingWorkload: 'Light' | 'Moderate' | 'Heavy';
+  ratingQuality: number | null;
+  ratingWorkload: 'Light' | 'Moderate' | 'Heavy' | null;
   reviewText: string;
 };
 
@@ -56,6 +57,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [isCourseDropdownOpen, setIsCourseDropdownOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [didAttemptSubmit, setDidAttemptSubmit] = useState(false);
 
   const sortedCourses = useMemo(
     () => [...courses].sort((a, b) => a.course_name.localeCompare(b.course_name)),
@@ -63,11 +65,12 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   );
 
   const normalizedSearch = state.searchText.trim().toLowerCase();
+  const hasTypedCourseSearch = state.searchText.trim().length > 0;
   const matchingCourses = useMemo(
     () =>
       normalizedSearch
-        ? sortedCourses.filter((course) => course.course_name.toLowerCase().includes(normalizedSearch)).slice(0, 8)
-        : sortedCourses.slice(0, 5),
+        ? sortedCourses.filter((course) => course.course_name.toLowerCase().includes(normalizedSearch)).slice(0, 5)
+        : [],
     [sortedCourses, normalizedSearch],
   );
 
@@ -77,11 +80,12 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   );
 
   const selectedCourseFromState = useMemo(
-    () => courses.find((course) => course.course_id === state.selectedCourseId) ?? null,
-    [courses, state.selectedCourseId],
+    () => courses.find((course) => course.course_id === state.selectedCourseId) ?? (mode === 'selected' ? selectedCourse : null),
+    [courses, mode, selectedCourse, state.selectedCourseId],
   );
 
   const canCreateNewCourse = state.searchText.trim().length > 0 && !existingCourseNameSet.has(state.searchText.trim().toLowerCase());
+  const reviewIsTooShort = state.reviewText.trim().length < 10;
   const isOpen = mode !== null;
 
   useEffect(() => {
@@ -90,6 +94,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     setFeedback(null);
     setIsCourseDropdownOpen(false);
     setIsSubmitted(false);
+    setDidAttemptSubmit(false);
   }, [isOpen, mode, selectedCourse]);
 
   useEffect(() => {
@@ -151,6 +156,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       newCourseName: '',
       categoryType: 'Yenching',
       trackName: '',
+      newCourseLanguage: '',
       usedForTrackCredit: false,
       usedForTrack: '',
       professorMode: 'existing',
@@ -169,6 +175,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       newCourseName,
       categoryType: 'Yenching',
       trackName: '',
+      newCourseLanguage: '',
       usedForTrackCredit: false,
       usedForTrack: '',
       professorMode: 'new',
@@ -185,6 +192,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       selectedCourseId: '',
       searchText: '',
       newCourseName: '',
+      newCourseLanguage: '',
       professorMode: 'existing',
       selectedProfessor: '',
       professorName: '',
@@ -207,12 +215,23 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setDidAttemptSubmit(true);
     setFeedback(null);
 
     const professorName = state.professorMode === 'existing' ? state.selectedProfessor : state.professorName;
 
     if (state.reviewText.trim().length < 10) {
       setFeedback({ type: 'error', message: 'Please write at least 10 characters for your response.' });
+      return;
+    }
+
+    if (state.ratingQuality === null) {
+      setFeedback({ type: 'error', message: 'Please select a quality rating.' });
+      return;
+    }
+
+    if (state.ratingWorkload === null) {
+      setFeedback({ type: 'error', message: 'Please select a workload rating.' });
       return;
     }
 
@@ -233,6 +252,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
             courseName: state.newCourseName,
             categoryType: state.categoryType,
             trackName: state.trackName,
+            language: state.newCourseLanguage,
             usedForTrackCredit: state.categoryType === 'PKU-Wide' ? state.usedForTrackCredit : null,
             usedForTrack: state.categoryType === 'PKU-Wide' ? state.usedForTrack : null,
             professorName,
@@ -282,49 +302,50 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           {mode === 'global' && (
             <section className="form-section">
               <p className="question-heading">1. Which course would you like to review?</p>
-              <div className="autocomplete-wrap">
-                <input
-                  id="course-search"
-                  value={state.searchText}
-                  onChange={(event) => {
-                    setForm('searchText', event.target.value);
-                    if (state.submissionMode === 'new') {
-                      setForm('submissionMode', 'existing');
-                      setForm('newCourseName', '');
-                    }
-                    setForm('selectedCourseId', '');
-                    setIsCourseDropdownOpen(true);
-                  }}
-                  onFocus={() => setIsCourseDropdownOpen(true)}
-                  placeholder="Search course name..."
-                  autoComplete="off"
-                  role="combobox"
-                  aria-autocomplete="list"
-                  aria-expanded={isCourseDropdownOpen}
-                  aria-controls="course-search-options"
-                />
-                {state.selectedCourseId && (
-                  <button type="button" className="input-clear" aria-label="Clear selected course" onClick={clearSelectedCourse}>✕</button>
-                )}
+              {!effectiveCourse && (
+                <div className="autocomplete-wrap">
+                  <input
+                    id="course-search"
+                    value={state.searchText}
+                    onChange={(event) => {
+                      setForm('searchText', event.target.value);
+                      if (state.submissionMode === 'new') {
+                        setForm('submissionMode', 'existing');
+                        setForm('newCourseName', '');
+                      }
+                      setForm('selectedCourseId', '');
+                      setIsCourseDropdownOpen(true);
+                    }}
+                    onFocus={() => setIsCourseDropdownOpen(true)}
+                    placeholder="Search course name..."
+                    autoComplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded={isCourseDropdownOpen}
+                    aria-controls="course-search-options"
+                  />
 
-                {isCourseDropdownOpen && (
-                  <div id="course-search-options" className="autocomplete-dropdown" role="listbox">
-                    {matchingCourses.length > 0 ? (
-                      matchingCourses.map((course) => (
-                        <button type="button" key={course.course_id} className="autocomplete-option" onClick={() => switchToExisting(course)}>
-                          {course.course_name}
+                  {isCourseDropdownOpen && (
+                    <div id="course-search-options" className="autocomplete-dropdown" role="listbox">
+                      {hasTypedCourseSearch && matchingCourses.length > 0 ? (
+                        matchingCourses.map((course) => (
+                          <button type="button" key={course.course_id} className="autocomplete-option" onClick={() => switchToExisting(course)}>
+                            {course.course_name}
+                          </button>
+                        ))
+                      ) : hasTypedCourseSearch ? (
+                        <p className="autocomplete-empty">No matching courses found.</p>
+                      ) : null}
+
+                      {hasTypedCourseSearch && canCreateNewCourse ? (
+                        <button type="button" className="autocomplete-option add-new-course-option" onClick={switchToNewCourse}>
+                          Can&apos;t find it? Add a new course
                         </button>
-                      ))
-                    ) : canCreateNewCourse ? (
-                      <button type="button" className="autocomplete-option no-match" onClick={switchToNewCourse}>
-                        No matching courses found — Add a new course
-                      </button>
-                    ) : (
-                      <p className="autocomplete-empty">No courses available.</p>
-                    )}
-                  </div>
-                )}
-              </div>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
           )}
 
@@ -332,6 +353,9 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
             <section className="form-section">
               {mode === 'selected' ? <p className="question-heading">1. Which course would you like to review?</p> : null}
               <div className="selected-course-card">
+                {mode === 'global' && (
+                  <button type="button" className="selected-course-clear" aria-label="Clear selected course" onClick={clearSelectedCourse}>✕</button>
+                )}
                 <p className="selected-course-name">{effectiveCourse.course_name}</p>
                 <div className="selected-course-tags">
                   {effectiveCourse.category_type && (
@@ -340,13 +364,14 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                     </span>
                   )}
                   {effectiveCourse.track_name && <span className={`tag ${trackToken(effectiveCourse.track_name)}`}>{effectiveCourse.track_name}</span>}
+                  {effectiveCourse.language && <span className="tag language">{effectiveCourse.language}</span>}
                 </div>
               </div>
             </section>
           )}
 
           {state.submissionMode === 'new' && (
-            <section className="form-section">
+            <section className="form-section new-course-section">
               <label htmlFor="new-course-name">Course name</label>
               <input id="new-course-name" value={state.newCourseName} onChange={(event) => setForm('newCourseName', event.target.value)} />
 
@@ -395,6 +420,15 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                   )}
                 </>
               )}
+
+              <label htmlFor="new-language">Language</label>
+              <select id="new-language" value={state.newCourseLanguage} onChange={(event) => setForm('newCourseLanguage', event.target.value)}>
+                <option value="">Select language</option>
+                <option value="English">English</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Bilingual">Bilingual</option>
+                <option value="Other">Other</option>
+              </select>
             </section>
           )}
 
@@ -417,17 +451,31 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                     {professor}
                   </button>
                 ))}
-                <button
-                  type="button"
-                  className={`chip secondary-chip ${state.professorMode === 'new' ? 'active' : ''}`}
-                  onClick={() => setForm('professorMode', 'new')}
-                >
-                  Add new professor
-                </button>
+                {state.professorMode === 'new' ? (
+                  <div className="chip professor-inline-editor">
+                    <input
+                      value={state.professorName}
+                      onChange={(event) => setForm('professorName', event.target.value)}
+                      placeholder="Professor name"
+                      autoFocus
+                    />
+                    <button type="button" className="professor-inline-submit" onClick={addNewProfessor} disabled={!state.professorName.trim()}>
+                      Add
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="chip secondary-chip"
+                    onClick={() => setForm('professorMode', 'new')}
+                  >
+                    Add new professor
+                  </button>
+                )}
               </div>
             )}
 
-            {(state.professorMode === 'new' || professorOptions.length === 0) && (
+            {(state.professorMode === 'new' || professorOptions.length === 0) && professorOptions.length === 0 && (
               <div className="inline-input-action fused">
                 <input value={state.professorName} onChange={(event) => setForm('professorName', event.target.value)} placeholder="Professor name" />
                 <button type="button" className="danger-button" onClick={addNewProfessor} disabled={!state.professorName.trim()}>
@@ -439,7 +487,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
           <section className="form-section">
             <p className="question-heading">3. When did you take this course?</p>
-            <div className="term-control-row">
+            <div className="term-control-row centered-answer-row">
               {['Fall', 'Spring'].map((season) => (
                 <button key={season} type="button" className={`pill ${state.termSeason === season ? 'active' : ''}`} onClick={() => setForm('termSeason', season as FormState['termSeason'])}>
                   {season}
@@ -455,7 +503,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
           <section className="form-section">
             <p className="question-heading">4. How would you rate the quality of this course?</p>
-            <div className="pill-row quality-row">
+            <div className="pill-row quality-row centered-answer-row">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button key={value} type="button" className={`pill ${state.ratingQuality === value ? 'active' : ''}`} onClick={() => setForm('ratingQuality', value)}>
                   {value} · {QUALITY_LABELS[value]}
@@ -466,7 +514,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
           <section className="form-section">
             <p className="question-heading">5. How would you describe the workload?</p>
-            <div className="pill-row">
+            <div className="pill-row centered-answer-row">
               {['Light', 'Moderate', 'Heavy'].map((value) => (
                 <button key={value} type="button" className={`pill ${state.ratingWorkload === value ? 'active' : ''}`} onClick={() => setForm('ratingWorkload', value as FormState['ratingWorkload'])}>
                   {value}
@@ -476,16 +524,21 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           </section>
 
           <section className="form-section">
-            <p className="question-heading">6. What should future students know about this course?</p>
+            <p className="question-heading">6. What should future students know about this course?<span className="required-inline">* (10 character min.)</span></p>
             <textarea
               id="review-text"
               value={state.reviewText}
-              onChange={(event) => setForm('reviewText', event.target.value)}
-              placeholder="Share your experience in the course..."
+              onChange={(event) => {
+                setForm('reviewText', event.target.value);
+                if (didAttemptSubmit) setDidAttemptSubmit(false);
+              }}
+              placeholder="Share your experience…"
               rows={5}
               required
               minLength={10}
+              aria-invalid={didAttemptSubmit && reviewIsTooShort}
             />
+            {didAttemptSubmit && reviewIsTooShort ? <p className="form-hint review-text-hint">Please write at least 10 characters.</p> : null}
           </section>
 
           {feedback && <p className={`form-feedback ${feedback.type}`}>{feedback.message}</p>}
@@ -511,6 +564,7 @@ function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: C
       newCourseName: '',
       categoryType: 'Yenching',
       trackName: '',
+      newCourseLanguage: '',
       usedForTrackCredit: false,
       usedForTrack: '',
       professorMode: 'existing',
@@ -518,8 +572,8 @@ function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: C
       selectedProfessor: '',
       termSeason: 'Fall',
       termYear: defaultYear,
-      ratingQuality: 4,
-      ratingWorkload: 'Moderate',
+      ratingQuality: null,
+      ratingWorkload: null,
       reviewText: '',
     };
   }
@@ -531,6 +585,7 @@ function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: C
     newCourseName: '',
     categoryType: 'Yenching',
     trackName: '',
+    newCourseLanguage: '',
     usedForTrackCredit: false,
     usedForTrack: '',
     professorMode: 'existing',
@@ -538,8 +593,8 @@ function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: C
     selectedProfessor: '',
     termSeason: 'Fall',
     termYear: defaultYear,
-    ratingQuality: 4,
-    ratingWorkload: 'Moderate',
+    ratingQuality: null,
+    ratingWorkload: null,
     reviewText: '',
   };
 }
