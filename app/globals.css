@@ -793,7 +793,12 @@ a {
 
 .term-control-stack {
   display: grid;
+  grid-template-columns: auto auto;
+  justify-content: center;
+  align-items: start;
+  column-gap: 1.2rem;
   gap: 0.75rem;
+  margin-inline: auto;
 }
 
 .term-control-group {
@@ -819,14 +824,19 @@ a {
 
 .term-year-dropdown {
   position: relative;
+  width: 200px;
 }
 
 .term-year-pill {
-  width: min(160px, 100%);
+  width: 100%;
   justify-content: space-between;
+  min-height: 36px;
+  padding: 0.36rem 0.88rem 0.36rem 0.95rem;
+  gap: 0.75rem;
 }
 
 .term-year-pill > span:first-child {
+  flex: 1;
   text-align: left;
 }
 
@@ -839,13 +849,11 @@ a {
   font-size: 1.05rem;
   line-height: 1;
   font-weight: 600;
-  position: absolute;
-  right: 0.74rem;
 }
 
 .term-year-menu {
   position: absolute;
-  width: min(160px, 100%);
+  width: 100%;
   top: calc(100% + 0.35rem);
   z-index: 6;
 }
@@ -1006,6 +1014,15 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .term-control-stack {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .term-control-group {
+    width: 100%;
+  }
+
   .term-season-row {
     flex-direction: column;
     width: 100%;
@@ -1013,6 +1030,11 @@ a {
 
   .term-season-row .pill {
     width: 100%;
+  }
+
+  .term-year-dropdown {
+    width: 100%;
+    max-width: 280px;
   }
 
   .term-year-pill,
