@@ -858,10 +858,12 @@ a {
   width: 100%;
   top: calc(100% + 0.35rem);
   z-index: 6;
+  background: #fff;
 }
 
 .term-year-option {
   justify-content: flex-start;
+  background: #fff;
 }
 
 .term-year-option:last-child {
