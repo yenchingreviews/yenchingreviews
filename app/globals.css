@@ -298,13 +298,6 @@ a {
   color: #fff;
 }
 
-.filter-tag.category.is-yenching,
-.filter-tag.category.is-pku {
-  background: transparent;
-  border-color: var(--control-line);
-  color: var(--muted);
-}
-
 .tag.language {
   background: #eee8de;
   color: #2f241c;
@@ -922,78 +915,62 @@ a {
   margin-bottom: 1rem;
 }
 
-.clear-filters {
+.filter-control {
   border: 1px solid var(--control-line);
-  background: transparent;
-  color: var(--muted);
   border-radius: 8px;
-  font-size: 0.9rem;
+  background: transparent;
+  color: #6b5a4a;
+  font-weight: 550;
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.filter-control:hover {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.filter-control:focus-visible {
+  outline: 2px solid rgba(180, 35, 42, 0.35);
+  outline-offset: 2px;
+}
+
+.filter-control.active,
+.filter-control[aria-pressed='true'] {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
   font-weight: 620;
+}
+
+.clear-filters {
+  font-size: 0.9rem;
   padding: 0.46rem 0.94rem;
   min-width: 7.4rem;
   margin-left: auto;
-  cursor: pointer;
-  transition: all 140ms ease;
-}
-
-.clear-filters:hover {
-  background: #f7f2ec;
-  border-color: #bfae9c;
 }
 
 .clear-filters.is-active {
-  color: #7b1f28;
-  border-color: #d7a0a5;
-  background: #fbecef;
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
 }
 
-.filter-tag {
+.filter-bubble {
   font-size: 0.9rem;
-  font-weight: 550;
   min-height: 36px;
   padding: 0.38rem 0.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  color: var(--muted);
-  border-radius: 7px;
-  border: 1px solid var(--control-line);
-  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
 }
 
-.filter-tag:hover {
-  box-shadow: none;
-  border-color: #b59f89;
-  background: #f6efe6;
-}
-
-.filter-tag.active {
-  border-color: var(--brand-red);
-  box-shadow: none;
-  color: #fff;
-  font-weight: 620;
-}
-
-.filter-tag.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
-.filter-tag.track-general { background: #9ca3af; border-color: #9ca3af; color: #ffffff; }
-.filter-tag.track-history { background: #7a4a29; border-color: #6a3f22; color: #ffffff; }
-.filter-tag.track-law { background: #3f7a61; border-color: #346850; color: #ffffff; }
-.filter-tag.track-literature { background: #df6ba1; border-color: #c95d91; color: #ffffff; }
-.filter-tag.track-philosophy { background: #f4bf3a; border-color: #c89a2e; color: #ffffff; }
-.filter-tag.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
-.filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
-
-.filter-tag.category.is-yenching.active,
-.filter-tag.language.active {
-  background: var(--brand-red);
-  border-color: var(--brand-red);
-}
-
-.filter-tag.category.is-pku.active {
+.filter-bubble.category.is-pku.active,
+.filter-bubble.category.is-pku[aria-pressed='true'] {
   background: #232323;
   border-color: #232323;
+  color: #fff;
 }
 
 .course-item {
@@ -1083,21 +1060,14 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid var(--control-line);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--muted);
   min-height: 38px;
   padding: 0.55rem 0.74rem;
   font: inherit;
   font-size: 0.9rem;
-  font-weight: 550;
-  cursor: pointer;
 }
 
-.track-dropdown-trigger:hover {
-  border-color: #b59f89;
-  background: #f6efe6;
+.track-dropdown-trigger.open {
+  border-color: var(--brand-red);
 }
 
 .track-trigger-label {
@@ -1125,14 +1095,10 @@ a {
 }
 
 .track-dropdown-caret {
-  color: #746457;
+  color: currentColor;
   font-size: 1.05rem;
   line-height: 1;
   font-weight: 600;
-}
-
-.track-dropdown-trigger.open {
-  border-color: #b37c82;
 }
 
 .track-dropdown-menu {
@@ -1146,10 +1112,9 @@ a {
 
 .track-option {
   width: 100%;
-  border: 0;
-  border-bottom: 1px solid #e7dccf;
-  background: transparent;
-  color: #413529;
+  border-radius: 0;
+  border-width: 0 0 1px;
+  border-color: #e7dccf;
   padding: 0.58rem 0.7rem;
   font: inherit;
   font-size: 0.89rem;
@@ -1157,7 +1122,6 @@ a {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  cursor: pointer;
 }
 
 .filter-group h3 {
@@ -1173,12 +1137,10 @@ a {
   border-bottom: 0;
 }
 
-.track-option:hover {
-  background: #ece2d6;
-}
-
-.track-option.active {
+.track-option.active,
+.track-option[aria-pressed='true'] {
   background: var(--brand-red);
+  border-color: var(--brand-red);
   color: #fff;
   font-weight: 620;
 }
