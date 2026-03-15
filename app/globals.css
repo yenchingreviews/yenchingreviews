@@ -475,7 +475,7 @@ a {
 }
 
 .professor-choice-row .chip {
-  min-height: 34px;
+  min-height: 36px;
 }
 
 .secondary-chip {
@@ -492,8 +492,14 @@ a {
   border-radius: 8px;
   background: transparent;
   color: #5f5042;
+  min-height: 36px;
   padding: 0.37rem 0.75rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 550;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
 }
@@ -503,8 +509,8 @@ a {
 .link-button:hover,
 .submit-button:hover,
 .modal-close:hover {
-  border-color: #bfae9c;
-  background: #f7f2ec;
+  border-color: #b59f89;
+  background: #f6efe6;
 }
 
 .pill.active,
@@ -512,7 +518,7 @@ a {
   border-color: var(--brand-red);
   color: #fff;
   background: var(--brand-red);
-  font-weight: 600;
+  font-weight: 620;
 }
 
 .link-button {
@@ -942,24 +948,28 @@ a {
 }
 
 .filter-tag {
-  font-size: 0.88rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 550;
+  min-height: 36px;
   padding: 0.38rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease;
 }
 
 .filter-tag:hover {
   box-shadow: none;
-  border-color: #bfae9c;
-  background: #f7f2ec;
+  border-color: #b59f89;
+  background: #f6efe6;
 }
 
 .filter-tag.active {
   border-color: var(--brand-red);
   box-shadow: none;
   color: #fff;
-  font-weight: 600;
+  font-weight: 620;
 }
 
 .filter-tag {
@@ -1079,16 +1089,17 @@ a {
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
+  min-height: 38px;
   padding: 0.55rem 0.74rem;
   font: inherit;
-  font-size: 0.89rem;
-  font-weight: 580;
+  font-size: 0.9rem;
+  font-weight: 550;
   cursor: pointer;
 }
 
 .track-dropdown-trigger:hover {
-  border-color: #bfae9c;
-  background: #f7f2ec;
+  border-color: #b59f89;
+  background: #f6efe6;
 }
 
 .track-trigger-label {
@@ -1165,13 +1176,13 @@ a {
 }
 
 .track-option:hover {
-  background: #efe8de;
+  background: #f6efe6;
 }
 
 .track-option.active {
   background: var(--brand-red);
   color: #fff;
-  font-weight: 600;
+  font-weight: 620;
 }
 
 .required-inline {

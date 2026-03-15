@@ -80,8 +80,8 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   );
 
   const selectedCourseFromState = useMemo(
-    () => courses.find((course) => course.course_id === state.selectedCourseId) ?? null,
-    [courses, state.selectedCourseId],
+    () => courses.find((course) => course.course_id === state.selectedCourseId) ?? (mode === 'selected' ? selectedCourse : null),
+    [courses, mode, selectedCourse, state.selectedCourseId],
   );
 
   const canCreateNewCourse = state.searchText.trim().length > 0 && !existingCourseNameSet.has(state.searchText.trim().toLowerCase());

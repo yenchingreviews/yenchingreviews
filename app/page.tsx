@@ -51,7 +51,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     }),
   ]);
 
-  const selectedCourse = results.courses.find((course) => course.course_id === selected.selectedCourseId) ?? null;
+  const selectedCourse =
+    results.courses.find((course) => course.course_id === selected.selectedCourseId)
+    ?? allCourseResults.courses.find((course) => course.course_id === selected.selectedCourseId)
+    ?? null;
   const reviewMode = searchParams.review_mode === 'global' || searchParams.review_mode === 'selected' ? searchParams.review_mode : null;
 
   const reviewResults = selectedCourse
@@ -66,6 +69,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   const selectedParams = new URLSearchParams(globalParams.toString());
   selectedParams.set('review_mode', 'selected');
+  if (selectedCourse?.course_id) {
+    selectedParams.set('selected_course_id', selectedCourse.course_id);
+  }
 
   return (
     <>
@@ -91,7 +97,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
         <ReviewSubmissionModal
           mode={reviewMode}
-          courses={reviewMode === 'global' ? allCourseResults.courses : results.courses}
+          courses={allCourseResults.courses}
           selectedCourse={selectedCourse}
           trackOptions={filters.tracks}
         />
