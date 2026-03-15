@@ -230,13 +230,6 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
       <div className="filter-group">
         <h3>Language</h3>
         <div className="filter-row">
-          <button
-            type="button"
-            className={`tag filter-tag all-tag ${selected.languages.length === 0 ? 'active all-active' : ''}`}
-            onClick={() => resetGroup('language')}
-          >
-            All
-          </button>
           {options.languages.map((language) => (
             <FilterBubble
               key={language}
