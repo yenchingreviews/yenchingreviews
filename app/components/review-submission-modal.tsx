@@ -595,7 +595,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           {feedback && <p className={`form-feedback ${feedback.type}`}>{feedback.message}</p>}
 
           <div className="review-modal-actions">
-            <button type="submit" className="submit-button action-control" disabled={isPending}>Publish Review</button>
+            <button type="submit" className="submit-button action-control btn-publish" disabled={isPending}>Publish Review</button>
           </div>
         </form>
         )}
