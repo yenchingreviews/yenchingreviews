@@ -111,7 +111,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
     return (
       <button
         type="button"
-        className={`tag filter-tag ${className ?? ''} ${active ? 'active' : ''}`}
+        className={`filter-control filter-bubble ${className ?? ''} ${active ? 'active' : ''}`}
         onClick={() => onPick(value)}
         aria-pressed={active}
       >
@@ -126,7 +126,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
     <section className="filter-panel">
       <div className="panel-header-row filters-header-row">
         <h2 className="panel-title panel-title-filters">Filters</h2>
-        <button type="button" className={`clear-filters ${anyFilterActive ? 'is-active' : ''}`} onClick={resetAll}>
+        <button type="button" className={`filter-control clear-filters ${anyFilterActive ? 'is-active' : ''}`} onClick={resetAll}>
           Clear All
         </button>
       </div>
@@ -152,7 +152,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
         <div className="track-dropdown-wrap" ref={trackDropdownRef}>
           <button
             type="button"
-            className={`track-dropdown-trigger ${isTrackMenuOpen ? 'open' : ''}`}
+            className={`filter-control track-dropdown-trigger ${isTrackMenuOpen ? 'open' : ''}`}
             onClick={() => setIsTrackMenuOpen((open) => !open)}
             aria-haspopup="listbox"
             aria-expanded={isTrackMenuOpen}
@@ -199,7 +199,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
             <div className="track-dropdown-menu" role="listbox" aria-label="Filter by track">
               <button
                 type="button"
-                className={`track-option ${selected.trackNames.length === 0 ? 'active' : ''}`}
+                className={`filter-control track-option ${selected.trackNames.length === 0 ? 'active' : ''}`}
                 onClick={() => resetGroup('track_name')}
               >
                 <span className="track-dot track-neutral" aria-hidden="true" />
@@ -210,7 +210,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
                 <button
                   key={track}
                   type="button"
-                  className={`track-option ${selectedTrack === track ? 'active' : ''}`}
+                  className={`filter-control track-option ${selectedTrack === track ? 'active' : ''}`}
                   onClick={() => {
                     selectSingleFilter('track_name', track);
                     setIsTrackMenuOpen(false);

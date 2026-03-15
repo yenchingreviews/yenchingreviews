@@ -75,7 +75,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <>
-      <Header addReviewHref={`/?${globalParams.toString()}`} />
+      <Header addReviewHref={`/?${globalParams.toString()}`} isAddReviewActive={reviewMode === 'global'} />
       <main className="catalog-page">
         {(results.error || reviewResults.error) && <p className="notice">{results.error ?? reviewResults.error}</p>}
 
@@ -91,7 +91,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             />
           </div>
           <div className="right-column">
-            <CourseDetail course={selectedCourse} reviews={reviewResults.reviews} writeReviewHref={selectedCourse ? `/?${selectedParams.toString()}` : null} />
+            <CourseDetail
+              course={selectedCourse}
+              reviews={reviewResults.reviews}
+              writeReviewHref={selectedCourse ? `/?${selectedParams.toString()}` : null}
+              isWriteReviewActive={reviewMode === 'selected'}
+            />
           </div>
         </div>
 
