@@ -95,9 +95,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const hasSelectedExistingCourse = state.submissionMode === 'existing' && Boolean(state.selectedCourseId);
 
   const professorUiState = useMemo(() => {
-    if (state.submissionMode === 'new') {
-      return state.professorMode === 'new' ? 'input' : 'dropdown';
-    }
+    if (state.submissionMode === 'new') return 'input';
     if (!hasSelectedExistingCourse) return 'disabled';
     if (state.professorMode === 'new') return 'input';
     return 'dropdown';
@@ -273,7 +271,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       newCourseLanguage: '',
       usedForTrackCredit: false,
       usedForTrack: '',
-      professorMode: 'existing',
+      professorMode: 'new',
       selectedProfessor: '',
       professorName: '',
     }));
@@ -319,7 +317,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
     setDidAttemptSubmit(true);
     setFeedback(null);
 
-    const professorName = state.professorMode === 'existing' ? state.selectedProfessor : state.professorName;
+    const professorName = state.submissionMode === 'new' ? state.professorName : (state.professorMode === 'existing' ? state.selectedProfessor : state.professorName);
 
     if (state.reviewText.trim().length < 10) {
       setFeedback({ type: 'error', message: 'Please write at least 10 characters for your response.' });
@@ -338,6 +336,11 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 
     if (state.termSeason === null) {
       setFeedback({ type: 'error', message: 'Please select whether you took the course in Fall or Spring.' });
+      return;
+    }
+
+    if (!state.termYear) {
+      setFeedback({ type: 'error', message: 'Please select the year you took this course.' });
       return;
     }
 
@@ -776,7 +779,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                   aria-haspopup="listbox"
                   aria-expanded={isYearMenuOpen}
                 >
-                  <span>{state.termYear}</span>
+                  <span>{state.termYear || 'Select year'}</span>
                   <span aria-hidden="true" className="term-year-caret">▾</span>
                 </button>
 
@@ -861,7 +864,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
 }
 
 function buildInitialState(mode: 'global' | 'selected' | null, selectedCourse: Course | null): FormState {
-  const defaultYear = String(currentYear);
+  const defaultYear = '';
 
   if (mode === 'selected' && selectedCourse) {
     return {
