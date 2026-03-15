@@ -449,6 +449,41 @@ a {
   margin: 0;
 }
 
+.create-mode-shell {
+  margin-bottom: 1.7rem;
+}
+
+.create-mode-card {
+  border: 1px solid #e0d5c7;
+  border-radius: var(--radius-lg);
+  background: #f9f5ef;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.back-to-search {
+  border: 0;
+  background: transparent;
+  color: #6f6052;
+  padding: 0;
+  justify-self: start;
+  font-size: 0.83rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-ui);
+  cursor: pointer;
+}
+
+.back-to-search:hover {
+  color: #7c1e28;
+}
+
+.create-mode-helper {
+  margin: -0.25rem 0 0;
+  font-size: 0.85rem;
+  color: #6f6052;
+}
+
 .review-form input,
 .review-form select,
 .review-form textarea {
@@ -503,9 +538,36 @@ a {
   min-height: 36px;
 }
 
-.secondary-chip {
-  color: #6b5a4a;
-  background: transparent;
+.add-action-chip {
+  color: #7c1e28;
+  border-color: #d7a0a5;
+  background: #f6ece2;
+}
+
+.add-action-chip:hover {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.professor-loading-shell {
+  display: flex;
+  justify-content: center;
+}
+
+.professor-skeleton {
+  width: min(420px, 100%);
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e2d6c8;
+  background: linear-gradient(90deg, #f0e7dc 0%, #faf6f0 50%, #f0e7dc 100%);
+  background-size: 220% 100%;
+  animation: professor-loading 1.4s ease-in-out infinite;
+}
+
+@keyframes professor-loading {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 .pill,
@@ -566,6 +628,9 @@ a {
 
 .autocomplete-wrap input {
   padding-right: 2rem;
+  min-height: 36px;
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .input-clear {
@@ -729,42 +794,57 @@ a {
   gap: 0.8rem;
 }
 
-.term-control-row {
+.term-control-stack {
   display: grid;
-  grid-template-columns: repeat(3, minmax(92px, 1fr));
-  align-items: center;
-  gap: 0.5rem;
-  max-width: 360px;
-  width: 100%;
+  grid-template-columns: auto auto;
+  justify-content: center;
+  align-items: start;
+  column-gap: 1.7rem;
+  gap: 0.75rem;
   margin-inline: auto;
 }
 
-.term-control-row .pill {
+.term-control-group {
+  display: grid;
+  gap: 0.42rem;
+  justify-items: center;
+}
+
+.question-subheading {
+  margin: 0;
+  font-size: 0.79rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-ui);
+  color: #7a6b5d;
+}
+
+.term-season-row .pill {
   min-width: 0;
   text-align: center;
-  height: 36px;
-  padding: 0.34rem 0.74rem;
+  min-height: 36px;
+  font-size: 0.9rem;
+  padding: 0.34rem 0.78rem;
 }
 
 .term-year-dropdown {
   position: relative;
+  width: fit-content;
+  min-width: 86px;
+  max-width: 106px;
 }
 
 .term-year-pill {
   width: 100%;
-  min-width: 0;
+  justify-content: space-between;
   min-height: 36px;
-  padding: 0.34rem 0.74rem;
   font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  padding: 0.34rem 1.05rem 0.34rem 0.9rem;
+  gap: 0.75rem;
 }
 
 .term-year-pill > span:first-child {
-  width: 100%;
-  text-align: center;
+  flex: 1;
+  text-align: left;
 }
 
 .term-year-pill.open {
@@ -776,30 +856,19 @@ a {
   font-size: 1.05rem;
   line-height: 1;
   font-weight: 600;
-  position: absolute;
-  right: 0.74rem;
 }
 
 .term-year-menu {
   position: absolute;
   width: 100%;
   top: calc(100% + 0.35rem);
-  border: 1px solid var(--control-line);
-  border-radius: var(--radius-md);
-  background: #f4f0ea;
-  box-shadow: 0 8px 20px rgba(40, 30, 20, 0.1);
-  overflow: hidden;
   z-index: 6;
+  background: #fff;
 }
 
 .term-year-option {
-  width: 100%;
-  border-radius: 0;
-  border-width: 0 0 1px;
-  border-color: #e7dccf;
-  padding: 0.58rem 0.7rem;
-  justify-content: center;
-  min-height: 36px;
+  justify-content: flex-start;
+  background: #fff;
 }
 
 .term-year-option:last-child {
@@ -954,12 +1023,26 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .term-control-row {
+  .term-control-stack {
     grid-template-columns: 1fr;
+    justify-items: center;
   }
 
-  .secondary-chip {
-    margin-left: 0;
+  .term-control-group {
+    width: 100%;
+  }
+
+  .term-season-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .term-season-row .pill {
+    width: 100%;
+  }
+
+  .term-year-dropdown {
+    width: fit-content;
   }
 }
 
