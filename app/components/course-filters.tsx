@@ -136,13 +136,6 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
       <div className="filter-group">
         <h3>Yenching or PKU-Wide</h3>
         <div className="filter-row">
-          <button
-            type="button"
-            className={`tag filter-tag all-tag ${selected.categoryTypes.length === 0 ? 'active all-active' : ''}`}
-            onClick={() => resetGroup('category_type')}
-          >
-            All
-          </button>
           {options.categories.map((category) => (
             <FilterBubble
               key={category}
@@ -150,7 +143,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
               value={category}
               selectedValues={selected.categoryTypes}
               onPick={(value) => toggleFilter('category_type', value)}
-              className={`category ${category === 'Yenching' ? 'is-yenching filter-with-dot' : 'is-pku filter-with-dot'}`}
+              className={`category ${category === 'Yenching' ? 'is-yenching' : 'is-pku'}`}
             />
           ))}
         </div>

@@ -3,6 +3,7 @@
   --ink: #28211d;
   --muted: #71665a;
   --line: #e4e4e7;
+  --control-line: #cfc3b6;
   --brand-red: #b4232a;
 }
 
@@ -300,7 +301,7 @@ a {
 .filter-tag.category.is-yenching,
 .filter-tag.category.is-pku {
   background: transparent;
-  border-color: var(--line);
+  border-color: var(--control-line);
   color: var(--muted);
 }
 
@@ -347,7 +348,7 @@ a {
   font-size: 0.84rem;
   font-weight: 600;
   color: #7c1e28;
-  background: #f7eeef;
+  background: transparent;
 }
 
 .modal-backdrop {
@@ -434,6 +435,25 @@ a {
   background: #fff;
 }
 
+.review-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #65564a 50%),
+    linear-gradient(135deg, #65564a 50%, transparent 50%);
+  background-position:
+    calc(100% - 17px) 15px,
+    calc(100% - 10px) 15px;
+  background-size: 7px 7px, 7px 7px;
+  background-repeat: no-repeat;
+  padding-right: 1.9rem;
+}
+
+.review-form select:hover {
+  border-color: #bfae9c;
+}
+
 .pill-row,
 .suggestion-row {
   display: flex;
@@ -468,11 +488,12 @@ a {
 .link-button,
 .modal-close,
 .submit-button {
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 8px;
   background: transparent;
   color: #5f5042;
-  padding: 0.34rem 0.68rem;
+  padding: 0.37rem 0.75rem;
+  font-weight: 500;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
 }
@@ -482,15 +503,16 @@ a {
 .link-button:hover,
 .submit-button:hover,
 .modal-close:hover {
-  border-color: #cfc4b8;
+  border-color: #bfae9c;
   background: #f7f2ec;
 }
 
 .pill.active,
 .chip.active {
   border-color: var(--brand-red);
-  color: #7f1e28;
-  background: #fcf1f2;
+  color: #fff;
+  background: var(--brand-red);
+  font-weight: 600;
 }
 
 .link-button {
@@ -682,7 +704,7 @@ a {
 }
 
 .term-year-pill {
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 8px;
   color: #5f5042;
   background-color: transparent;
@@ -690,12 +712,12 @@ a {
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image:
-    linear-gradient(45deg, transparent 50%, #6f5e4f 50%),
-    linear-gradient(135deg, #6f5e4f 50%, transparent 50%);
+    linear-gradient(45deg, transparent 50%, #65564a 50%),
+    linear-gradient(135deg, #65564a 50%, transparent 50%);
   background-position:
-    calc(100% - 18px) 15px,
-    calc(100% - 13px) 15px;
-  background-size: 5px 5px, 5px 5px;
+    calc(100% - 18px) 16px,
+    calc(100% - 11px) 16px;
+  background-size: 7px 7px, 7px 7px;
   background-repeat: no-repeat;
   padding-right: 1.8rem;
 }
@@ -895,7 +917,7 @@ a {
 }
 
 .clear-filters {
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   background: transparent;
   color: var(--muted);
   border-radius: 8px;
@@ -910,7 +932,7 @@ a {
 
 .clear-filters:hover {
   background: #f7f2ec;
-  border-color: #cfc4b8;
+  border-color: #bfae9c;
 }
 
 .clear-filters.is-active {
@@ -921,28 +943,30 @@ a {
 
 .filter-tag {
   font-size: 0.88rem;
-  font-weight: 580;
-  padding: 0.42rem 0.78rem;
+  font-weight: 500;
+  padding: 0.38rem 0.75rem;
   cursor: pointer;
   transition: border-color 140ms ease, background-color 140ms ease;
 }
 
 .filter-tag:hover {
   box-shadow: none;
-  border-color: #cfc4b8;
+  border-color: #bfae9c;
   background: #f7f2ec;
 }
 
 .filter-tag.active {
   border-color: var(--brand-red);
   box-shadow: none;
+  color: #fff;
+  font-weight: 600;
 }
 
 .filter-tag {
   background: transparent;
   color: var(--muted);
   border-radius: 7px;
-  border-color: var(--line);
+  border-color: var(--control-line);
 }
 
 .filter-tag.track-econ { background: #5a6d8e; border-color: #4f6283; color: #ffffff; }
@@ -954,42 +978,14 @@ a {
 .filter-tag.track-politics { background: #34537f; border-color: #2b466c; color: #ffffff; }
 .filter-tag.track-default { background: #6f6258; border-color: #5f5349; color: #ffffff; }
 
-.filter-tag.all-tag {
-  background: transparent;
-  color: var(--muted);
-}
-
-.filter-tag.track-all {
-  background: #f2eee8;
-  color: #2f241c;
-}
-
-.filter-tag.all-tag.all-active {
-  background: #fcf1f2;
+.filter-tag.category.is-yenching.active {
+  background: var(--brand-red);
   border-color: var(--brand-red);
-  box-shadow: none;
 }
 
-.filter-with-dot {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.filter-with-dot::before {
-  content: '';
-  width: 0.46rem;
-  height: 0.46rem;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-.filter-tag.category.is-yenching.filter-with-dot::before {
-  background: #b4232a;
-}
-
-.filter-tag.category.is-pku.filter-with-dot::before {
-  background: #111111;
+.filter-tag.category.is-pku.active {
+  background: #232323;
+  border-color: #232323;
 }
 
 .course-item {
@@ -1079,7 +1075,7 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
@@ -1091,7 +1087,7 @@ a {
 }
 
 .track-dropdown-trigger:hover {
-  border-color: #cfc4b8;
+  border-color: #bfae9c;
   background: #f7f2ec;
 }
 
@@ -1121,8 +1117,9 @@ a {
 
 .track-dropdown-caret {
   color: #746457;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   line-height: 1;
+  font-weight: 600;
 }
 
 .track-dropdown-trigger.open {
@@ -1131,7 +1128,7 @@ a {
 
 .track-dropdown-menu {
   margin-top: 0.35rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 9px;
   background: #f4f0ea;
   box-shadow: 0 8px 20px rgba(40, 30, 20, 0.1);
@@ -1172,8 +1169,9 @@ a {
 }
 
 .track-option.active {
-  background: #eee5da;
-  color: #7b1f28;
+  background: var(--brand-red);
+  color: #fff;
+  font-weight: 600;
 }
 
 .required-inline {
