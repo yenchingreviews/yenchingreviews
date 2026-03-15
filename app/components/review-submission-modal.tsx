@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { formatCategoryLabel, isYenchingCategory } from '@/app/components/category-label';
 import { trackToken } from '@/app/components/track-token';
 import type { Course } from '@/types/course';
 
@@ -59,7 +60,11 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [didAttemptSubmit, setDidAttemptSubmit] = useState(false);
   const [isYearMenuOpen, setIsYearMenuOpen] = useState(false);
+  const [isNewTrackMenuOpen, setIsNewTrackMenuOpen] = useState(false);
+  const [isUsedTrackMenuOpen, setIsUsedTrackMenuOpen] = useState(false);
   const yearDropdownRef = useRef<HTMLDivElement | null>(null);
+  const newTrackDropdownRef = useRef<HTMLDivElement | null>(null);
+  const usedTrackDropdownRef = useRef<HTMLDivElement | null>(null);
 
   const sortedCourses = useMemo(
     () => [...courses].sort((a, b) => a.course_name.localeCompare(b.course_name)),
@@ -137,14 +142,20 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
       if (!yearDropdownRef.current?.contains(event.target as Node)) {
         setIsYearMenuOpen(false);
       }
+      if (!newTrackDropdownRef.current?.contains(event.target as Node)) {
+        setIsNewTrackMenuOpen(false);
+      }
+      if (!usedTrackDropdownRef.current?.contains(event.target as Node)) {
+        setIsUsedTrackMenuOpen(false);
+      }
     }
 
-    if (isYearMenuOpen) {
+    if (isYearMenuOpen || isNewTrackMenuOpen || isUsedTrackMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isYearMenuOpen]);
+  }, [isYearMenuOpen, isNewTrackMenuOpen, isUsedTrackMenuOpen]);
 
   if (!isOpen) return null;
 
@@ -380,8 +391,8 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                 <p className="selected-course-name">{effectiveCourse.course_name}</p>
                 <div className="selected-course-tags">
                   {effectiveCourse.category_type && (
-                    <span className={`tag category ${effectiveCourse.category_type === 'Yenching' ? 'is-yenching' : 'is-pku'}`}>
-                      {effectiveCourse.category_type}
+                    <span className={`tag category ${isYenchingCategory(effectiveCourse.category_type) ? 'is-yenching' : 'is-pku'}`}>
+                      {formatCategoryLabel(effectiveCourse.category_type)}
                     </span>
                   )}
                   {effectiveCourse.track_name && <span className={`tag ${trackToken(effectiveCourse.track_name)}`}>{effectiveCourse.track_name}</span>}
@@ -402,10 +413,10 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                   <button
                     key={value}
                     type="button"
-                    className={`pill ${state.categoryType === value ? 'active' : ''}`}
+                    className={`pill category-pill ${isYenchingCategory(value) ? 'is-yenching' : 'is-pku'} ${state.categoryType === value ? 'active' : ''}`}
                     onClick={() => setForm('categoryType', value as FormState['categoryType'])}
                   >
-                    {value}
+                    {formatCategoryLabel(value)}
                   </button>
                 ))}
               </div>
@@ -413,12 +424,50 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
               {state.categoryType === 'Yenching' ? (
                 <>
                   <label htmlFor="new-track">Track</label>
-                  <select id="new-track" value={state.trackName} onChange={(event) => setForm('trackName', event.target.value)}>
-                    <option value="">Select track</option>
-                    {trackOptions.map((track) => (
-                      <option key={track} value={track}>{track}</option>
-                    ))}
-                  </select>
+                  <div className="track-dropdown-wrap" ref={newTrackDropdownRef}>
+                    <button
+                      id="new-track"
+                      type="button"
+                      className={`filter-control track-dropdown-trigger ${isNewTrackMenuOpen ? 'open' : ''}`}
+                      onClick={() => setIsNewTrackMenuOpen((open) => !open)}
+                      aria-haspopup="listbox"
+                      aria-expanded={isNewTrackMenuOpen}
+                    >
+                      <span className="track-trigger-label">
+                        {state.trackName ? (
+                          <span className="track-trigger-selected">
+                            <span className={`track-dot ${trackToken(state.trackName)}`} aria-hidden="true" />
+                            <span>{state.trackName}</span>
+                          </span>
+                        ) : (
+                          'Select track'
+                        )}
+                      </span>
+                      <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+                    </button>
+
+                    {isNewTrackMenuOpen && (
+                      <div className="track-dropdown-menu" role="listbox" aria-label="Select track">
+                        {trackOptions.map((track) => {
+                          const active = state.trackName === track;
+                          return (
+                            <button
+                              key={track}
+                              type="button"
+                              className={`filter-control track-option ${active ? 'active' : ''}`}
+                              onClick={() => {
+                                setForm('trackName', track);
+                                setIsNewTrackMenuOpen(false);
+                              }}
+                            >
+                              <span className={`track-dot ${trackToken(track)}`} aria-hidden="true" />
+                              <span>{track}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </>
               ) : (
                 <>
@@ -431,25 +480,68 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
                   {state.usedForTrackCredit && (
                     <>
                       <label htmlFor="used-track">Used for track</label>
-                      <select id="used-track" value={state.usedForTrack} onChange={(event) => setForm('usedForTrack', event.target.value)}>
-                        <option value="">Select track</option>
-                        {trackOptions.map((track) => (
-                          <option key={track} value={track}>{track}</option>
-                        ))}
-                      </select>
+                      <div className="track-dropdown-wrap" ref={usedTrackDropdownRef}>
+                        <button
+                          id="used-track"
+                          type="button"
+                          className={`filter-control track-dropdown-trigger ${isUsedTrackMenuOpen ? 'open' : ''}`}
+                          onClick={() => setIsUsedTrackMenuOpen((open) => !open)}
+                          aria-haspopup="listbox"
+                          aria-expanded={isUsedTrackMenuOpen}
+                        >
+                          <span className="track-trigger-label">
+                            {state.usedForTrack ? (
+                              <span className="track-trigger-selected">
+                                <span className={`track-dot ${trackToken(state.usedForTrack)}`} aria-hidden="true" />
+                                <span>{state.usedForTrack}</span>
+                              </span>
+                            ) : (
+                              'Select track'
+                            )}
+                          </span>
+                          <span aria-hidden="true" className="track-dropdown-caret">▾</span>
+                        </button>
+
+                        {isUsedTrackMenuOpen && (
+                          <div className="track-dropdown-menu" role="listbox" aria-label="Select used track">
+                            {trackOptions.map((track) => {
+                              const active = state.usedForTrack === track;
+                              return (
+                                <button
+                                  key={track}
+                                  type="button"
+                                  className={`filter-control track-option ${active ? 'active' : ''}`}
+                                  onClick={() => {
+                                    setForm('usedForTrack', track);
+                                    setIsUsedTrackMenuOpen(false);
+                                  }}
+                                >
+                                  <span className={`track-dot ${trackToken(track)}`} aria-hidden="true" />
+                                  <span>{track}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     </>
                   )}
                 </>
               )}
 
-              <label htmlFor="new-language">Language</label>
-              <select id="new-language" value={state.newCourseLanguage} onChange={(event) => setForm('newCourseLanguage', event.target.value)}>
-                <option value="">Select language</option>
-                <option value="English">English</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Bilingual">Bilingual</option>
-                <option value="Other">Other</option>
-              </select>
+              <p className="field-title">Language</p>
+              <div className="filter-row">
+                {['Chinese', 'English'].map((language) => (
+                  <button
+                    key={language}
+                    type="button"
+                    className={`filter-control filter-bubble language ${state.newCourseLanguage === language ? 'active' : ''}`}
+                    onClick={() => setForm('newCourseLanguage', language)}
+                  >
+                    {language}
+                  </button>
+                ))}
+              </div>
             </section>
           )}
 
@@ -595,7 +687,7 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
           {feedback && <p className={`form-feedback ${feedback.type}`}>{feedback.message}</p>}
 
           <div className="review-modal-actions">
-            <button type="submit" className="submit-button action-control" disabled={isPending}>Publish Review</button>
+            <button type="submit" className="submit-button action-control btn-publish" disabled={isPending}>Publish Review</button>
           </div>
         </form>
         )}

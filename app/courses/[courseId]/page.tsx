@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { formatCategoryLabel } from '@/app/components/category-label';
 import { getCourseById, getCourseReviews } from '@/lib/courses';
 
 export const dynamic = 'force-dynamic';
@@ -51,7 +52,7 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
         <section className="panel course-header">
           <h1 className="brand course-detail-title">{courseResult.course.course_name}</h1>
           <div className="meta">
-            {courseResult.course.category_type && <span className="tag">{courseResult.course.category_type}</span>}
+            {courseResult.course.category_type && <span className="tag">{formatCategoryLabel(courseResult.course.category_type)}</span>}
             {courseResult.course.track_name && <span className="tag">{courseResult.course.track_name}</span>}
             {courseResult.course.language && <span className="tag">{courseResult.course.language}</span>}
           </div>
