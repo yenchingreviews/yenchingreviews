@@ -6,6 +6,7 @@ type CourseDetailProps = {
   course: Course | null;
   reviews: Review[];
   writeReviewHref: string | null;
+  isWriteReviewActive?: boolean;
 };
 
 function renderTerm(review: Review) {
@@ -14,7 +15,7 @@ function renderTerm(review: Review) {
   return 'Term unavailable';
 }
 
-export function CourseDetail({ course, reviews, writeReviewHref }: CourseDetailProps) {
+export function CourseDetail({ course, reviews, writeReviewHref, isWriteReviewActive = false }: CourseDetailProps) {
   if (!course) {
     return (
       <section className="panel detail-panel detail-panel-empty">
@@ -42,7 +43,7 @@ export function CourseDetail({ course, reviews, writeReviewHref }: CourseDetailP
       <div className="reviews-heading">
         <h3>Reviews</h3>
         {writeReviewHref && (
-          <Link href={writeReviewHref} className="inline-cta-button" scroll={false}>
+          <Link href={writeReviewHref} className={`inline-cta-button filter-control ${isWriteReviewActive ? 'active' : ''}`} scroll={false}>
             Write a Review
           </Link>
         )}

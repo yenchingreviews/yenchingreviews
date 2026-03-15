@@ -68,10 +68,14 @@ a {
 }
 
 .nav-link-cta {
-  border: 1px solid #d7a0a5;
-  border-radius: 8px;
+  margin-left: 1rem;
+  min-height: 36px;
   padding: 0.32rem 0.72rem;
-  color: #7c1e28;
+  font-size: 0.9rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .catalog-page {
@@ -335,13 +339,12 @@ a {
 }
 
 .inline-cta-button {
-  border: 1px solid #d7a0a5;
-  border-radius: 8px;
+  min-height: 36px;
   padding: 0.3rem 0.72rem;
   font-size: 0.84rem;
-  font-weight: 600;
-  color: #7c1e28;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-backdrop {
@@ -928,6 +931,12 @@ a {
 .filter-control:hover {
   border-color: var(--brand-red);
   background: var(--brand-red);
+  color: #fff;
+}
+
+.filter-bubble.category.is-pku:hover {
+  background: #232323;
+  border-color: #232323;
   color: #fff;
 }
 
