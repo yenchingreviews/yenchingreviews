@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CourseDetail } from '@/app/components/course-detail';
 import { CourseFilters } from '@/app/components/course-filters';
 import { CourseList } from '@/app/components/course-list';
@@ -39,6 +39,18 @@ export function MobileCatalogShell({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const previousCatalogScrollRef = useRef(0);
+
+  useEffect(() => {
+    if (!selectedCourse) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedCourse]);
 
   function handleCourseSelect() {
     previousCatalogScrollRef.current = window.scrollY;

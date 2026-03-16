@@ -91,6 +91,21 @@ export function ReviewSubmissionModal({ mode, courses, selectedCourse, trackOpti
   const canCreateNewCourse = state.searchText.trim().length > 0 && !existingCourseNameSet.has(state.searchText.trim().toLowerCase());
   const reviewIsTooShort = state.reviewText.trim().length < 10;
   const isOpen = mode !== null;
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousOverscrollBehavior = document.body.style.overscrollBehavior;
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehavior = 'contain';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.overscrollBehavior = previousOverscrollBehavior;
+    };
+  }, [isOpen]);
   const isCreateMode = mode === 'global' && state.submissionMode === 'new';
   const hasSelectedExistingCourse = state.submissionMode === 'existing' && Boolean(state.selectedCourseId);
 
