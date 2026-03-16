@@ -38,6 +38,11 @@ body {
   overflow: hidden;
 }
 
+body:has(.modal-backdrop) {
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -390,7 +395,7 @@ a {
   justify-content: center;
   align-items: flex-start;
   padding: 2.5rem 1rem;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 
@@ -400,7 +405,7 @@ a {
   border-radius: 14px;
   border: 1px solid #e3d9cd;
   box-shadow: 0 20px 40px rgba(32, 25, 20, 0.2);
-  max-height: calc(100vh - 5rem);
+  max-height: min(calc(100dvh - 5rem), calc(100vh - 5rem));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -423,10 +428,13 @@ a {
 .review-form {
   padding: 1.5rem;
   padding-right: 1.25rem;
-  overflow-y: auto;
   width: 100%;
   display: grid;
   gap: 2.5rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .form-section {
@@ -881,10 +889,14 @@ a {
 .form-feedback.success { color: #1a6a3a; }
 
 .review-modal-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
-  margin-top: -0.5rem;
-  padding-top: 0.5rem;
+  margin: 0;
+  padding: 0.75rem 0 calc(0.35rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff 34%);
 }
 
 .review-success-state {
@@ -1014,10 +1026,24 @@ a {
     padding: 0.9rem 1rem;
   }
 
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .review-modal {
+    width: 100%;
+    max-height: min(100dvh, 100vh);
+    border-radius: 14px 14px 0 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
   .review-form {
     padding: 1rem;
     padding-right: 0.85rem;
-    gap: 2rem;
+    gap: 1.4rem;
   }
 
   .split {
@@ -1193,24 +1219,33 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.34rem;
+  min-width: 0;
+}
+
+.course-name {
+  overflow-wrap: anywhere;
 }
 
 .course-meta-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.65rem;
+  min-width: 0;
 }
 
 .course-meta {
   gap: 0.28rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .review-count-text {
   font-size: 0.79rem;
   color: #7b6e62;
   white-space: nowrap;
-  margin-left: 1.2rem;
+  margin-left: 0;
+  flex: 0 0 auto;
 }
 
 .catalog-search {
@@ -1491,15 +1526,18 @@ a {
 }
 
 .mobile-catalog-shell {
-  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 .mobile-screen-track {
-  display: grid;
-  grid-template-columns: 100% 100%;
+  display: flex;
   width: 200%;
   transform: translateX(0);
   transition: transform 220ms ease;
+  will-change: transform;
 }
 
 .mobile-catalog-shell.detail-active .mobile-screen-track {
@@ -1507,7 +1545,10 @@ a {
 }
 
 .mobile-screen {
-  width: 100%;
+  flex: 0 0 50%;
+  width: 50%;
+  max-width: 50%;
+  min-width: 0;
 }
 
 .mobile-detail-back {
@@ -1554,15 +1595,22 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid var(--control-line);
+    border: 1px solid #d8cab9;
     border-radius: var(--radius-md);
-    background: #fff;
-    color: #5a4b3d;
-    padding: 0.55rem 0.72rem;
+    background: #fdfaf6;
+    color: #554738;
+    padding: 0.62rem 0.72rem;
+    min-height: 2.7rem;
     font: inherit;
     font-size: 0.9rem;
-    font-weight: 620;
-    margin-bottom: 0.7rem;
+    font-weight: 640;
+    margin-bottom: 0.6rem;
+    transition: border-color 140ms ease, background-color 140ms ease;
+  }
+
+  .mobile-filters-toggle.open {
+    border-color: #ccb9a5;
+    background: #f8f0e6;
   }
 
   .mobile-filters-toggle-label {
@@ -1572,7 +1620,9 @@ a {
   .mobile-filters-toggle-meta {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.48rem;
+    margin-left: auto;
+    flex: 0 0 auto;
   }
 
   .mobile-filter-count-badge {
@@ -1590,8 +1640,14 @@ a {
 
   .mobile-filters-chevron {
     color: #6f6258;
-    font-size: 0.85rem;
+    font-size: 1rem;
     line-height: 1;
+    transform: rotate(0deg);
+    transition: transform 180ms ease;
+  }
+
+  .mobile-filters-toggle.open .mobile-filters-chevron {
+    transform: rotate(180deg);
   }
 
   .filter-panel {
@@ -1599,22 +1655,73 @@ a {
   }
 
   .filter-panel-content {
-    display: none;
     border: 1px solid #eadfd2;
     background: #f8f4ee;
     border-radius: var(--radius-md);
     padding: 0.75rem;
     margin-bottom: 0.85rem;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 220ms ease, opacity 170ms ease;
   }
 
   .filter-panel-content.is-open {
-    display: block;
+    max-height: 70dvh;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .clear-filters {
     min-width: 6.5rem;
     padding: 0.42rem 0.78rem;
     font-size: 0.82rem;
+  }
+
+  .catalog-head {
+    margin-bottom: 0.52rem;
+  }
+
+  .catalog-head p {
+    margin-top: 0.32rem;
+    font-size: 0.74rem;
+  }
+
+  .course-list {
+    gap: 0.44rem;
+  }
+
+  .course-link,
+  .review-card {
+    padding: 0.58rem;
+  }
+
+  .course-link {
+    gap: 0.22rem;
+  }
+
+  .course-name {
+    margin-bottom: 0.22rem;
+    font-size: 0.97rem;
+    line-height: 1.3;
+  }
+
+  .tag {
+    font-size: 0.68rem;
+    padding: 0.14rem 0.44rem;
+  }
+
+  .course-meta {
+    gap: 0.22rem;
+  }
+
+  .course-meta-row {
+    gap: 0.45rem;
+  }
+
+  .review-count-text {
+    font-size: 0.74rem;
   }
 
   .mobile-detail-screen {

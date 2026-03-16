@@ -135,7 +135,7 @@ export function CourseFilters({ selected, options }: CourseFiltersProps) {
         <span className="mobile-filters-toggle-label">Filters</span>
         <span className="mobile-filters-toggle-meta">
           {activeFilterCount > 0 && <span className="mobile-filter-count-badge">{activeFilterCount}</span>}
-          <span className="mobile-filters-chevron" aria-hidden="true">{isMobileFiltersOpen ? '▴' : '▾'}</span>
+          <span className="mobile-filters-chevron" aria-hidden="true">⌄</span>
         </span>
       </button>
 
